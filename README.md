@@ -1,4 +1,4 @@
-# hubot-chatops-sm
+# hubot-sm
 
 A hubot script that does the things
 
@@ -8,9 +8,9 @@ See [`src/chatops-sm.coffee`](src/chatops-sm.coffee) for full documentation.
 
 In hubot project repo, run:
 
-`npm install hubot-chatops-sm --save`
+`npm install hubot-sm --save`
 
-Then add **hubot-chatops-sm** to your `external-scripts.json`:
+Then add **hubot-sm** to your `external-scripts.json`:
 
 ```json
 [
