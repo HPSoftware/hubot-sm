@@ -1,0 +1,64 @@
+{
+  "name": "hubot-chatops-sm",
+  "description": "A hubot script for HPE Service Manager",
+  "version": "0.0.1",
+  "author": "ke-ke.qi@hpe.com, hai-qing.bu@hpe.com",
+
+  "keywords": "hubot, hubot-scripts",
+
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/hubot-scripts/hubot-chatops-sm.git"
+  },
+
+  "bugs": {
+    "url": "https://github.com/hubot-scripts/hubot-chatops-sm/issues"
+  },
+
+  "dependencies": {
+    "async": "^1.5.2",
+    "bluebird": "^3.3.4",
+    "co": "^4.6.0",
+    "hubot": "^2.18.0",
+    "hubot-diagnostics": "0.0.1",
+    "hubot-google-images": "^0.2.6",
+    "hubot-google-translate": "^0.2.0",
+    "hubot-help": "^0.1.3",
+    "hubot-heroku-keepalive": "^1.0.2",
+    "hubot-maps": "0.0.2",
+    "hubot-pugme": "^0.1.0",
+    "hubot-redis-brain": "0.0.3",
+    "hubot-rules": "^0.1.1",
+    "hubot-scripts": "^2.16.2",
+    "hubot-shipit": "^0.2.0",
+    "hubot-slack": "git+https://github.com/keke/hubot-slack.git",
+    "lodash": "^4.6.1",    
+    "request": "^2.69.0",
+    "string": "^3.3.1"
+  },
+
+  "peerDependencies": {
+    "hubot": "2.x"
+  },
+
+  "devDependencies": {
+    "chai": "^2.1.1",
+    "coffee-script": "1.6.3",
+    "grunt": "^0.4.5",
+    "grunt-cli": "^0.1.13",
+    "grunt-contrib-watch": "~0.6.1",
+    "grunt-mocha-test": "~0.12.7",
+    "grunt-release": "~0.11.0",
+    "hubot": "2.x",
+    "matchdep": "~0.3.0",
+    "mocha": "^2.1.0",
+    "sinon": "^1.13.0",
+    "sinon-chai": "^2.7.0"
+  },
+
+  "main": "index.coffee",
+
+  "scripts": {
+    "test": "grunt test"
+  }
+}
