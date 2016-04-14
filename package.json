@@ -1,20 +1,16 @@
 {
-  "name": "hubot-chatops-sm",
+  "name": "hubot-sm",
   "description": "A hubot script for HPE Service Manager",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "ke-ke.qi@hpe.com, hai-qing.bu@hpe.com",
-
   "keywords": "hubot, hubot-scripts",
-
   "repository": {
     "type": "git",
     "url": "git://github.com/hubot-scripts/hubot-chatops-sm.git"
   },
-
   "bugs": {
     "url": "https://github.com/hubot-scripts/hubot-chatops-sm/issues"
   },
-
   "dependencies": {
     "async": "^1.5.2",
     "bluebird": "^3.3.4",
@@ -32,15 +28,13 @@
     "hubot-scripts": "^2.16.2",
     "hubot-shipit": "^0.2.0",
     "hubot-slack": "git+https://github.com/keke/hubot-slack.git",
-    "lodash": "^4.6.1",    
+    "lodash": "^4.6.1",
     "request": "^2.69.0",
     "string": "^3.3.1"
   },
-
   "peerDependencies": {
     "hubot": "2.x"
   },
-
   "devDependencies": {
     "chai": "^2.1.1",
     "coffee-script": "1.6.3",
@@ -55,9 +49,7 @@
     "sinon": "^1.13.0",
     "sinon-chai": "^2.7.0"
   },
-
   "main": "index.coffee",
-
   "scripts": {
     "test": "grunt test"
   }
