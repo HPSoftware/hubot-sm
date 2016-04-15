@@ -26,14 +26,6 @@ module.exports = (robot, callback) ->
       text = text.replace /<@([\w\d]+)(\|([\w]+))?>/ig, replaceText
     text
 
-  listPinMessages = (channel, callback) ->
-    robot.http('https://slack.com/api/pins.list?token=' + process.env.SLACK_APP_TOKEN + '&channel=' + channel)
-      .get() (err, resp, body) ->
-        if err
-          callback err
-        else
-          callback null, JSON.parse(body)
-
   robot.respond /sm\s+attach\s+incident\s*([\w\d]+)\s*(on (.+))?/i, (res)->
     id = res.match[1]
     robot.logger.debug res.match
@@ -82,72 +74,7 @@ module.exports = (robot, callback) ->
           "Incident":
             "review.detail": ["attach conversation"],
             "JournalUpdates": texts
+        res.reply 'Attached'
         # res.reply "Ticket updated, you can review ticket in SM via #{docengine_url}"
         cb(null)
     ])
-
-  robot.hear /attach conversation to (.*)/i,(res)->
-    # command='attach conversation to '
-    docengine_url = ""
-    # msg = res.envelope.message.text.replace("@#{process.env.ROBOT}:",'').trimLeft()
-    # groups = msg.match /^attach conversation to (.*)/i
-    incident_id = res.match[1]
-    room = res.envelope.room
-    channel = res.message.rawMessage.channel
-    listPinMessages channel, (err, body)->
-      if body.ok
-
-        for item in body.items
-          if item.type is 'message'
-
-            text = S(item.message.text).unescapeHTML().s
-            match = /<.+>[\r\n]+ID=([\d\w]+)[\r\n]+SM=(.+)[\r\n]+DOCENGINE_URL=<(.+)>/mgi.exec text
-            robot.logger.debug "Match result of #{text} is #{match}"
-            if not match
-              continue
-            s = match[2]
-            [server,port] = s.split(':')
-            docengine_url = match[3]
-            has_more = true
-            latest_ts = 0
-            token  = process.env.SLACK_APP_TOKEN
-            result = []
-
-
-            async.waterfall([
-              (cb)->
-                async.whilst(
-                  ()->  has_more
-                  (cb1)->
-                    robot.http("https://slack.com/api/channels.history?token=#{token}&channel=#{channel}&count=1000&latest=#{latest_ts}")
-                    .get() (err, resp, body) ->
-                      r = JSON.parse(body)
-                      has_more = r.has_more
-                      result = _.concat(result, r.messages)
-                      latest_ts = _.last(r.messages).ts if r.messages and r.messages.length > 1
-                      cb1(null)
-
-                  (err)->
-                    cb(null, result)
-                )
-              (messages,cb)->
-                robot.logger.debug "server:#{server}"
-                robot.logger.debug "port:#{port}"
-                robot.logger.debug "user:#{process.env.USER}"
-                robot.logger.debug "PASSWORD:#{process.env.PASSWORD}"
-                robot.logger.debug "Doc Engine URL : #{docengine_url}"
-                robot.logger.debug "incident id is #{incident_id}"
-                robot.logger.debug "message count is #{messages.length}"
-                texts = []
-                texts.push(resolveUser(m.text)) for m in messages
-                texts = texts.reverse()
-
-                incident = new IncidentMangement(server, port, process.env.USER, process.env.PASSWORD)
-                incident.incident_id = incident_id
-                incident.update
-                  "Incident":
-                    "review.detail": ["attach conversation"],
-                    "JournalUpdates": texts
-                res.reply "Ticket updated, you can review ticket in SM via #{docengine_url}"
-                cb(null)
-            ])
