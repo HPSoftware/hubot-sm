@@ -10,6 +10,15 @@ class SmExt
     @apiToken = apiToken
     @botToken = botToken
 
+  getHistory: (channel, latest_ts=0, count=1000)->
+    opts =
+      token: @apiToken
+      channel: channel
+      count: count
+      latest: latest_ts
+
+    SlackApi.channels.history opts
+
   createRoom: (name)->
     opts =
       token: @apiToken
@@ -18,7 +27,7 @@ class SmExt
 
   setTopic: (channelId, topic)->
     opts =
-      token: @botToken
+      token: @apiToken
       channel: channelId
       topic: topic
     SlackApi.channels.setTopic opts
@@ -32,7 +41,7 @@ class SmExt
 
   setPurpose: (channelId, purpose) ->
     opts =
-      token: @botToken
+      token: @apiToken
       channel: channelId
       purpose: purpose
     SlackApi.channels.setPurpose opts
