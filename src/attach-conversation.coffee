@@ -74,7 +74,7 @@ module.exports = (robot, callback) ->
           "Incident":
             "review.detail": ["attach conversation"],
             "JournalUpdates": texts
-        res.reply 'Attached'
+        res.reply "Conversation has been attached to Incident #{id} as Journal update"
         # res.reply "Ticket updated, you can review ticket in SM via #{docengine_url}"
         cb(null)
     ])

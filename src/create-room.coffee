@@ -85,4 +85,11 @@ module.exports = (robot) ->
                 }
               .then (body) ->
                 robot.sm_ext.pin channelId, body.ts
+              .then (body) ->
+                invitees = _(robot.brain.users()).filter((user)-> !!user.email_address and user.email_address in msgObj.users).value()
+                ps = _.map(invitees, (user)->
+                  robot.sm_ext.invite channelId, user.id
+                )
+                
+
   )
