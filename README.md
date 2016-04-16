@@ -1,8 +1,6 @@
 # hubot-sm
 
-A hubot script that does the things
-
-See [`src/chatops-sm.coffee`](src/chatops-sm.coffee) for full documentation.
+A hubot script for Service Manager ChatOps integration
 
 ## Installation
 
@@ -14,13 +12,60 @@ Then add **hubot-sm** to your `external-scripts.json`:
 
 ```json
 [
-  "hubot-chatops-sm"
+  "hubot-sm"
 ]
 ```
 
-## Sample Interaction
+See test hubot project https://github.hpe.com/IncubationLab/sm-chatops-test
 
+## Commands support
+
+Main commands are supported
+
+1. Attach conversation to Incident
+  * `sm incident attach <ID> on <ins>`
+1. Resolve an incident
+  * `sm incident resolve <ID> <msg> on <ins>`
+
+### Self discovery
+
+Show what have supported so far
 ```
-user1>> hubot hello
-hubot>> hello!
+sm
 ```
+And it will print major SM modules supported
+```
+sm incident
+sm change
+```
+User can continue discover by typing `sm incident` and it will print out
+```
+sm incident resolve ...
+sm incident attach ...
+```
+
+## Misc
+
+### Config
+User put configuration in a json file, see example https://github.hpe.com/IncubationLab/sm-chatops-test/blob/master/config.json
+```json
+{
+  "config":{
+    "sm":{
+      "servers":{
+        "default":"test",
+        "test":{
+          "endpoint":"16.187.186.51:13080",
+          "account":"System.Admin"
+        }
+      }
+    }
+  }
+}
+```
+So in the command, user can specify
+```
+sm incident attach IM092
+sm incident attach IM928 on test
+```
+Two commands are equivalent.
