@@ -10,6 +10,13 @@ class SmExt
     @apiToken = apiToken
     @botToken = botToken
 
+  formatChannelName: (prefix, roomName)->
+    # length of slack channel name must be 21 or less
+    if roomName.length >=21
+      roomName
+    else
+      "#{prefix.substring(0, 20-roomName.length)}-#{roomName}"
+    
   getHistory: (channel, latest_ts=0, count=1000)->
     opts =
       token: @apiToken

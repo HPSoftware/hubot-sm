@@ -10,7 +10,7 @@
 
 _ = require('lodash')
 Querystring = require('querystring')
-
+Config = require '../lib/config'
 BaseRoomInfo =
   server:'localhost'
   port:'13080'
@@ -51,7 +51,16 @@ module.exports = (robot) ->
       robot.logger.debug msgObj
       # format
 #      channelName = msgObj.service + msgObj.id
-      channelName = msgObj.room_name
+      # we need to prefix with instance name and make sure it is less than 21
+      servers = Config.get 'sm.servers'
+      endpoint = "#{msgObj.metaInfo.server}:#{msgObj.metaInfo.port}"
+      # get alias by endpoint
+      name = _.findKey(servers, (v)->
+        v and v.endpoint is endpoint
+      )
+      if not name then name = endpoint
+      channelName = robot.sm_ext.formatChannelName name, msgObj.room_name
+      # channelName = msgObj.room_name
       buf = new Buffer(msgObj.docengine_url,'base64')
       docengine_url = buf.toString('utf8')
       robot.logger.debug "doc engine url is #{docengine_url}"
@@ -90,6 +99,6 @@ module.exports = (robot) ->
                 ps = _.map(invitees, (user)->
                   robot.sm_ext.invite channelId, user.id
                 )
-                
+
 
   )
