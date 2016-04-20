@@ -1,16 +1,16 @@
-#_ = require('lodash')
-#IncidentMangement = require('../src/SMUtil')
-#S = require('string')
-#api = require '../src/slack_web_api'
-#Promise = require 'bluebird'
+# Description:
+#
+# Commands:
+#   sm incident resolve <id> <message> (on <ins>) - Resolve a Service Manager Incident
+#
+# Author:
+
+
+
 co = require 'co'
 SM = require '../lib/smworker'
 Config = require '../lib/config'
 
-
-# Bot command - resolve SM ticket with proposed solution
-#Syntax:
-#   @motieph: resolve IM10392 –s [solution]
 module.exports = (robot) ->
   if not robot.sm_ext
     SmExt = require "../lib/sm-#{robot.adapterName}"

@@ -79,6 +79,7 @@ module.exports = (robot) ->
                 purpose = "#{msgObj.description}"
                 robot.sm_ext.setPurpose channelId, purpose
               .then (body) ->
+                # TODO: replace this with robot.emit 'slack.attachment'
                 text = "<Don't delete and unpin this>\r\nID=#{msgObj.id}\r\nSM=#{msgObj.metaInfo.server}:#{msgObj.metaInfo.port}\r\nDOCENGINE_URL=#{docengine_url}"
                 robot.sm_ext.postMessage channelId, {
                   text: text
@@ -90,6 +91,6 @@ module.exports = (robot) ->
                 ps = _.map(invitees, (user)->
                   robot.sm_ext.invite channelId, user.id
                 )
-                
+
 
   )

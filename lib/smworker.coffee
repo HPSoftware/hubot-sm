@@ -1,13 +1,14 @@
 _ = require('lodash')
 IncidentMangement = require('./SMUtil')
 S = require('string')
-api = require './slack_web_api'
+# api = require './slack_web_api'
 Promise = require 'bluebird'
-co = require 'co'
+# co = require 'co'
 Config = require './config'
 
 sm =
   incident:
+    #TODO: replace ins (name) with url (localhost:13080) to decouple from Config.
     resolve: (id, msg, ins) ->
       new Promise (_resolve, reject) ->
         endpoint = Config.get "sm.servers.#{ins}.endpoint"
