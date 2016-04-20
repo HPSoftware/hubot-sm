@@ -8,24 +8,29 @@ Config = require './config'
 
 sm =
   incident:
-    #TODO: replace ins (name) with url (localhost:13080) to decouple from Config.
-    resolve: (id, msg, ins) ->
+    # update an incident
+    update: (id, incident_data, ins) ->
       new Promise (_resolve, reject) ->
         endpoint = Config.get "sm.servers.#{ins}.endpoint"
         [server, port] = endpoint.split(":")
         account = Config.get "sm.servers.#{ins}.account"
         incident = new IncidentMangement(server.trim(), port.trim(), account, Config.get "sm.servers.#{ins}.password")
         incident.incident_id = id
-        incident.update(
-          "Incident":
-            "Solution": [msg],
-            # 'Area':'hardware',
-            # "Subarea" :"missing or stolen",
-            # 'AssignmentGroup':'Application',
-            "Status":"Resolved",
-            "JournalUpdates":['Ticket is resolved in ChatOps']
+        incident.update("Incident": incident_data, (e, body)->
+          if e
+            reject e
+          else if body.code isnt 200
+            reject body
+          else
+            _resolve body
         )
 
-        _resolve()
+#add shortcuts
+sm.incident.resolve = (id, msg, ins, byUser)->
+  data =
+    Solution: [msg]
+    Status: "Resolved"
+    "JournalUpdates": ["Ticket resolved in ChatOps by #{byUser}"]
+  sm.incident.update(id, data, ins)
 
 module.exports = sm
