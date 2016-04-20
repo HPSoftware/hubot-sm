@@ -58,7 +58,7 @@ class SmExt
       token: @botToken
       channel: channelId
       as_user: false
-      # username: @robot.name
+      username: @robot.name
 
     SlackApi.chat.postMessage _.merge(detail, opts)
 
