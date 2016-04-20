@@ -24,6 +24,8 @@ sm =
           else
             _resolve body
         )
+  change:
+    update: (id, change_data, ins)->
 
 #add shortcuts
 sm.incident.resolve = (id, msg, ins, byUser)->
@@ -32,5 +34,7 @@ sm.incident.resolve = (id, msg, ins, byUser)->
     Status: "Resolved"
     "JournalUpdates": ["Ticket resolved in ChatOps by #{byUser}"]
   sm.incident.update(id, data, ins)
+
+sm.change.approve = (id, msg, ins, byUser)->
 
 module.exports = sm

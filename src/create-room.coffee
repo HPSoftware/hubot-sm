@@ -88,10 +88,30 @@ module.exports = (robot) ->
                 robot.sm_ext.setPurpose channelId, purpose
               .then (body) ->
                 # TODO: replace this with robot.emit 'slack.attachment'
-                text = "<Don't delete and unpin this>\r\nID=#{msgObj.id}\r\nSM=#{msgObj.metaInfo.server}:#{msgObj.metaInfo.port}\r\nDOCENGINE_URL=#{docengine_url}"
-                robot.sm_ext.postMessage channelId, {
-                  text: text
-                }
+                if robot.adapterName is 'slack'
+                  att =
+                    fallback: "Major incident <#{msgObj.id}> - #{msgObj.title}"
+                    color: "danger",
+                    title: "Major incident <#{msgObj.id}> - #{msgObj.title}"
+                    title_link: docengine_url
+                    text: msgObj.description
+                    fields: [
+                      {
+                        title: "Status",
+                        value: msgObj.Status
+                        short: true
+                      }
+                    ]
+                  data =                    
+                    text: "Major incident <#{msgObj.id}>",
+                    attachments:[att]
+
+                  # robot.emit 'slack.attachment', data
+                  robot.sm_ext.postMessage channelId, data
+                else
+                  text = "<Don't delete and unpin this>\r\nID=#{msgObj.id}\r\nSM=#{msgObj.metaInfo.server}:#{msgObj.metaInfo.port}\r\nDOCENGINE_URL=#{docengine_url}"
+                  # robot.send {room:channelName}, text
+                  robot.sm_ext.postMessage cannelId, text
               .then (body) ->
                 robot.sm_ext.pin channelId, body.ts
               .then (body) ->
@@ -99,6 +119,8 @@ module.exports = (robot) ->
                 ps = _.map(invitees, (user)->
                   robot.sm_ext.invite channelId, user.id
                 )
+              .catch (body)->
+                robot.logger.debug body
 
 
   )

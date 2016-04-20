@@ -16,7 +16,7 @@ class SmExt
       roomName
     else
       "#{prefix.substring(0, 20-roomName.length)}-#{roomName}"
-    
+
   getHistory: (channel, latest_ts=0, count=1000)->
     opts =
       token: @apiToken
@@ -57,11 +57,10 @@ class SmExt
     opts =
       token: @botToken
       channel: channelId
-      text: detail.text
       as_user: false
-      username: @robot.name
+      # username: @robot.name
 
-    SlackApi.chat.postMessage opts
+    SlackApi.chat.postMessage _.merge(detail, opts)
 
   pin: (channelId, ts)->
     opts =

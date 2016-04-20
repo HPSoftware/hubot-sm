@@ -1,3 +1,4 @@
+# Copied from Botkit
 request = require 'request'
 _ = require('lodash')
 Promise = require 'bluebird'
@@ -61,7 +62,7 @@ slack_api =
       slack_api.callAPI('channels.setPurpose',options)
 
     setTopic:(options)->
-      slack_api.callAPI('channels.setTopic', options) 
+      slack_api.callAPI('channels.setTopic', options)
 
     unarchive: (options)->
       slack_api.callAPI('channels.unarchive', options)
@@ -71,7 +72,7 @@ slack_api =
       slack_api.callAPI('chat.delete', options)
 
     postMessage: (options)->
-      if (options.attachments and typeof(options.attachments) != 'string') 
+      if (options.attachments and typeof(options.attachments) != 'string')
         options.attachments = JSON.stringify(options.attachments)
       slack_api.callAPI('chat.postMessage', options)
 
@@ -186,7 +187,7 @@ slack_api =
     remove:  (options) ->
       slack_api.callAPI('pins.remove', options)
 
-  reactions: 
+  reactions:
     add: (options) ->
       slack_api.callAPI('reactions.add', options)
 
@@ -199,7 +200,7 @@ slack_api =
     remove: (options) ->
       slack_api.callAPI('reactions.remove', options)
 
-  rtm: 
+  rtm:
     start: (options) ->
       slack_api.callAPI('rtm.start', options)
 
@@ -249,7 +250,3 @@ slack_api =
 #   api = require 'slack_web_api'
 #   api.channels.list(options).then((v)-> console.log v)
 module.exports = slack_api
-
-
-
-

@@ -27,10 +27,10 @@ module.exports = (robot, callback) ->
       text = text.replace /<@([\w\d]+)(\|([\w]+))?>/ig, replaceText
     text
 
-  robot.respond /sm\s+attach\s+incident\s*([\w\d]+)\s*(on (.+))?/i, (res)->
+  robot.respond /sm\s+attach\s+incident\s*([\w\d]+)\s*(?:on (.+))?/i, (res)->
     id = res.match[1]
     robot.logger.debug res.match
-    ins = res.match[3] or Config.get "sm.servers.default"
+    ins = res.match[2] or Config.get "sm.servers.default"
 
     robot.logger.debug "SM instance is #{ins}"
     serverEndpoint = Config.get("sm.servers.#{ins}.endpoint")
@@ -78,5 +78,5 @@ module.exports = (robot, callback) ->
           .catch (data) ->
             res.reply "Failed to attach conversation: #{data}"
             cb(data)
-        res.reply "Attaching converstaion to Service Manager Incident #{id}..."            
+        res.reply "Attaching converstaion to Service Manager Incident #{id}..."
     ])
