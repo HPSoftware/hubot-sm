@@ -10,28 +10,40 @@
 co = require 'co'
 SM = require '../lib/smworker'
 Config = require '../lib/config'
+Help = require '../lib/sm-help'
 
 module.exports = (robot) ->
   if not robot.sm_ext
     SmExt = require "../lib/sm-#{robot.adapterName}"
     robot.sm_ext = new SmExt(robot)
-  robot.respond /sm\s+resolve\s+incident\s+([\w\d]+)\s*(["“']([^"“']+)["“'])?(\s*on\s+(.+))?/i,(resp)->
+
+  needRes = [
+    "Need a *resolution message* when resolving a Service Manager incident",
+    "Try `sm resolve incident <ID> <\"message\">`"
+  ]
+
+  robot.respond /sm\s+resolve\s+incident\s+([\w\d]+)\s*(?:["“”']([^"”“']+)["“”'])?(?:\s*on\s+(.+))?$/i,(resp)->
     match = resp.match
-    robot.logger.debug match
+
     id = match[1]
-    msg = match[3]
+    msg = match[2]
     if not msg
-      msg = """
-      Need a resolution message when resolving an incident.
-      ------
-      Try sm resolve incident <ID> <"message">
-      """
-      resp.reply msg
+      Help.send robot, resp.message.room, needRes
       return
-    ins = if match[5]
-            ins
+    ins = if match[3]
+            match[3]
           else
             Config.get "sm.servers.default"
-    SM.incident.resolve(id, msg, ins)
+    endpoint = Config.get "sm.servers.#{ins}.endpoint"
+    if not endpoint
+      resp.reply "Unknown SM instance <#{ins}>"
+      return
+    user = resp.message.user
+
+    SM.incident.resolve(id, msg, ins, "<#{user.name}|#{user.email_address}>")
       .then (r)->
         resp.reply "Incident #{id} was resolved"
+      .catch (r)->
+        robot.logger.debug r
+        resp.reply "Failed to update Incident #{id} - #{r.body.Messages[0]}"
+    resp.reply "updating Incident #{id} on #{ins}<#{Config.get "sm.servers."+ins+".endpoint"}>....."

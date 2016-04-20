@@ -46,9 +46,10 @@ module.exports = (robot, callback) ->
   robot.respond /sm\s*$/i, (res)->
     help 'sm', res
 
-  robot.respond /sm\s+(\w+)/i, (res)->
-    name = res.match[1]
-    switch name
-      when 'incident' then help 'incident', res
-      when 'change' then help 'change', res
-      else help 'unknown', res, res.match[0]
+  # robot.respond /sm\s+(\w+)/i, (res)->
+  #   robot.logger.debug "Try to help with #{res.match[0]}"
+  #   name = res.match[1]
+  #   switch name
+  #     when 'incident' then help 'incident', res
+  #     when 'change' then help 'change', res
+  #     else help 'unknown', res, res.match[0]

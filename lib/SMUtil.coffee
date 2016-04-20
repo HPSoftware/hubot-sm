@@ -48,13 +48,14 @@ class RestMethod
         pass: @password
       body: JSON.stringify(opts)
 
-    request(options, (e, res, body) ->
-      if(err? )
-        console.log err
-
-      equal res.statusCode, 200
-      callback(JSON.parse(body) ) if callback?
-    )
+    request options, (e, res, body) ->
+      if e
+        callback(e) if callback?
+      else
+        r =
+          code: res.statusCode
+          body: JSON.parse body
+        callback null, r if callback?
 
 # Business Data Model for SM Incident Record
 class IncidentMangement extends RestMethod

@@ -34,12 +34,11 @@ module.exports = (robot) ->
   robot.listen(
     (msg) ->
       # This is bit slack specific
-      # robot.logger.debug 'receive message'
+      robot.logger.debug "check CreateRoom- Listen message: #{msg.text}"
       # robot.logger.debug msg
-      robot.adapterName is 'slack' and /!create-room (.*)/i.test(msg.rawText)
-
+      robot.adapterName is 'slack' and /!create-room\s+(.*)/i.test(msg.rawText)
     (resp) ->
-      # robot.logger.debug 'To execute bot listener'
+      robot.logger.debug 'To create a room'
       # robot.logger.debug resp
       msg = resp.message
       msgObj = {}
