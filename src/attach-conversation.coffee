@@ -3,6 +3,7 @@ IncidentMangement = require('../lib/SMUtil')
 async = require 'async'
 S = require('string')
 Config = require '../lib/config'
+SM =  require '../lib/smworker'
 
 # Bot command - resolve SM ticket with proposed solution
 #Syntax:
@@ -60,21 +61,22 @@ module.exports = (robot, callback) ->
         robot.logger.debug "server:#{server}"
         robot.logger.debug "port:#{port}"
         robot.logger.debug "user:#{account}"
-        robot.logger.debug "PASSWORD:#{Config.get("sm.servers.#{ins}.password")}"
+        # robot.logger.debug "PASSWORD:#{Config.get("sm.servers.#{ins}.password")}"
         # robot.logger.debug "Doc Engine URL : #{docengine_url}"
         robot.logger.debug "incident id is #{id}"
         robot.logger.debug "message count is #{messages.length}"
         texts = []
         texts.push(resolveUser(m.text)) for m in messages
         texts = texts.reverse()
-
-        incident = new IncidentMangement(server, port, account.trim(), Config.get("sm.servers.#{ins}.password").trim())
-        incident.incident_id = id
-        incident.update
-          "Incident":
-            "review.detail": ["attach conversation"],
-            "JournalUpdates": texts
-        res.reply "Conversation has been attached to Incident #{id} as Journal update"
-        # res.reply "Ticket updated, you can review ticket in SM via #{docengine_url}"
-        cb(null)
+        incident_data =
+          "review.detail": ["attach conversation"],
+          "JournalUpdates": texts
+        SM.incident.update(id, incident_data, ins)
+          .then (data)->
+            res.reply "Conversation has been attached to Incident #{id} as Journal update"
+            cb(data)
+          .catch (data) ->
+            res.reply "Failed to attach conversation: #{data}"
+            cb(data)
+        res.reply "Attaching converstaion to Service Manager Incident #{id}..."            
     ])
