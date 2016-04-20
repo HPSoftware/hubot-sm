@@ -6,7 +6,8 @@ loadConfig = ()->
   # console.log file
   str = fs.readFileSync file, 'utf8'
   # console.log str
-  JSON.parse str
+  _config = JSON.parse str
+  _config
 
 
 checkConfig = ()->
