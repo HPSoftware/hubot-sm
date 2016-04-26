@@ -89,22 +89,22 @@ module.exports = (robot) ->
               .then (body) ->
                 # TODO: replace this with robot.emit 'slack.attachment'
                 if robot.adapterName is 'slack'
-                  att =
-                    fallback: "Major incident <#{msgObj.id}> - #{msgObj.title}"
-                    color: "danger",
-                    title: "Major incident <#{msgObj.id}> - #{msgObj.title}"
-                    title_link: docengine_url
-                    text: msgObj.description
-                    fields: [
-                      {
-                        title: "Status",
-                        value: msgObj.Status
-                        short: true
-                      }
-                    ]
-                  data =                    
-                    text: "Major incident <#{msgObj.id}>",
-                    attachments:[att]
+                  # att =
+                  #   fallback: "Major incident <#{msgObj.id}> - #{msgObj.title}"
+                  #   color: "danger",
+                  #   title: "Major incident <#{msgObj.id}> - #{msgObj.title}"
+                  #   title_link: docengine_url
+                  #   text: msgObj.description
+                  #   fields: [
+                  #     {
+                  #       title: "Status",
+                  #       value: msgObj.Status
+                  #       short: true
+                  #     }
+                  #   ]
+                  data =
+                    text: msgObj.description,
+                    attachments:[msgObj.attachments]
 
                   # robot.emit 'slack.attachment', data
                   robot.sm_ext.postMessage channelId, data
