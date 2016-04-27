@@ -76,7 +76,11 @@ module.exports = (robot, callback) ->
             res.reply "Conversation has been attached to Incident #{id} as Journal update"
             cb(data)
           .catch (data) ->
-            res.reply "Failed to attach conversation: #{data}"
+            robot.logger.debug "Failed attaching conversation"
+            robot.logger.debug data.body            
+            # res.reply "Failed to attach conversation: #{data}"
+            slackMsg = robot.sm_ext.buildSlackMsgFromSmError "Failed to attach conversation to #{id}", channel, data
+            robot.emit 'slack.attachment', slackMsg
             cb(data)
         res.reply "Attaching converstaion to Service Manager Incident #{id}..."
     ])

@@ -10,6 +10,26 @@ class SmExt
     @apiToken = apiToken
     @botToken = botToken
 
+  buildSlackMsgFromSmError: (msg, channel, data)->
+    fields = _.omitBy data.body.Incident, (v)->
+      Array.isArray v
+    fields = _.map fields, (v, k)->
+        r =
+          title: k
+          value: v
+          short: true
+
+    att =
+      text: "*Reason*: _#{data.body.Messages.join('\r')}_"
+      fields: fields
+      mrkdwn_in: ["text", "pretext"]
+      color: 'warning'
+    slackMsg =
+      mrkdwn: true
+      channel: channel
+      text: msg
+      attachments:[att]
+
   formatChannelName: (prefix, roomName)->
     # length of slack channel name must be 21 or less
     if roomName.length >=21

@@ -45,5 +45,6 @@ module.exports = (robot) ->
         resp.reply "Incident #{id} was resolved"
       .catch (r)->
         robot.logger.debug r
-        resp.reply "Failed to update Incident #{id} - #{r.body.Messages[0]}"
+        msg = robot.sm_ext.buildSlackMsgFromSmError "Failed to resolve incident #{id}", resp.message.rawMessage.channel, r
+        robot.emit 'slack.attachment', msg
     resp.reply "updating Incident #{id} on #{ins}<#{Config.get "sm.servers."+ins+".endpoint"}>....."
