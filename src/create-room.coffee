@@ -11,6 +11,7 @@
 _ = require('lodash')
 Querystring = require('querystring')
 Config = require '../lib/config'
+Promise =  require 'bluebird'
 BaseRoomInfo =
   server:'localhost'
   port:'13080'
