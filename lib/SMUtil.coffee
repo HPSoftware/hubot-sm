@@ -26,11 +26,13 @@ class RestMethod
         pass: @password
 
     request(options, (e, res, body) ->
-      if(err? )
-        console.log err
-
-      equal res.statusCode, 200
-      callback(JSON.parse(body) ) if callback?
+      if e
+        callback e if callback?
+      else
+        r =
+          code: res.statusCode
+          body: JSON.parse body
+        callback null, r if callback?
     )
 
   postResp: (url, opts, callback = null) ->
