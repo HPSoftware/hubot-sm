@@ -122,6 +122,8 @@ module.exports = (robot) ->
                 )
               .catch (body)->
                 robot.logger.debug body
+        .catch (body)->
+          robot.logger.debug body
 
 
   )
