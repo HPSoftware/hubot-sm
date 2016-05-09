@@ -43,7 +43,7 @@ module.exports = (robot, callback) ->
     else
       sendHelp res.message.room, helpUnknown
 
-  robot.respond /sm\s*$/i, (res)->
+  robot.respond /ssm\s*$/i, (res)->
     help 'sm', res
 
   # robot.respond /sm\s+(\w+)/i, (res)->

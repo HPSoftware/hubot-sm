@@ -7,7 +7,7 @@ module.exports = (robot) ->
     SmExt = require "../lib/sm-#{robot.adapterName}"
     robot.sm_ext = new SmExt(robot)
 
-  robot.respond /sm\s+get\s+incident\s+([\w\d]+)(?:\s+on\s+([\w\d]+))?/i, (resp)->
+  robot.respond /ssm\s+get\s+incident\s+([\w\d]+)(?:\s+on\s+([\w\d]+))?/i, (resp)->
     id = resp.match[1]
     ins = resp.match[2] or Config.get "sm.servers.default"
 

@@ -27,7 +27,7 @@ module.exports = (robot, callback) ->
       text = text.replace /<@([\w\d]+)(\|([\w]+))?>/ig, replaceText
     text
 
-  robot.respond /sm\s+attach\s+incident\s*([\w\d]+)\s*(?:on (.+))?/i, (res)->
+  robot.respond /ssm\s+attach\s+incident\s*([\w\d]+)\s*(?:on (.+))?/i, (res)->
     id = res.match[1]
     robot.logger.debug res.match
     ins = res.match[2] or Config.get "sm.servers.default"
@@ -77,7 +77,7 @@ module.exports = (robot, callback) ->
             cb(data)
           .catch (data) ->
             robot.logger.debug "Failed attaching conversation"
-            robot.logger.debug data.body            
+            robot.logger.debug data.body
             # res.reply "Failed to attach conversation: #{data}"
             slackMsg = robot.sm_ext.buildSlackMsgFromSmError "Failed to attach conversation to #{id}", channel, data
             robot.emit 'slack.attachment', slackMsg

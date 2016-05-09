@@ -13,7 +13,7 @@ module.exports = (robot) ->
     SmExt = require "../lib/sm-#{robot.adapterName}"
     robot.sm_ext = new SmExt(robot)
 
-  robot.respond /sm\s+update\s+incident(.*)/i, (resp)->
+  robot.respond /ssm\s+update\s+incident(.*)/i, (resp)->
     params = resp.match[1]
     #check id
     m = /([\d\w]+)(.*)/i.exec params

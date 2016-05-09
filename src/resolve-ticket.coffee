@@ -22,7 +22,7 @@ module.exports = (robot) ->
     "Try `sm resolve incident <ID> <\"message\">`"
   ]
 
-  robot.respond /sm\s+resolve\s+incident\s+([\w\d]+)\s*(?:["“”']([^"”“']+)["“”'])?(?:\s*on\s+(.+))?$/i,(resp)->
+  robot.respond /ssm\s+resolve\s+incident\s+([\w\d]+)\s*(?:["“”']([^"”“']+)["“”'])?(?:\s*on\s+(.+))?$/i,(resp)->
     match = resp.match
 
     id = match[1]
