@@ -103,9 +103,10 @@ module.exports = (robot) ->
                   #       short: true
                   #     }
                   #   ]
+
                   data =
                     text: msgObj.description,
-                    attachments:[msgObj.attachments]
+                    attachments: msgObj.attachments
 
                   # robot.emit 'slack.attachment', data
                   robot.sm_ext.postMessage channelId, data
