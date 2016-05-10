@@ -1,19 +1,16 @@
 {
   "name": "hubot-sm",
   "description": "A hubot script for HPE Service Manager",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "ke-ke.qi@hpe.com, hai-qing.bu@hpe.com",
-  "keywords": "hubot, hubot-scripts",
+  "keywords": "hubot, hubot-scripts, service-manager",
   "repository": {
     "type": "git",
-    "url": "git://github.com/hubot-scripts/hubot-chatops-sm.git"
-  },
-  "bugs": {
-    "url": "https://github.com/hubot-scripts/hubot-chatops-sm/issues"
+    "url": "git@github.hpe.com:ChatOps/hubot-integrations.git"
   },
   "dependencies": {
     "async": "^1.5.2",
-    "bluebird": "^3.3.4",  
+    "bluebird": "^3.3.4",
     "hubot": "^2.18.0",
     "hubot-help": "^0.1.3",
     "hubot-scripts": "^2.16.2",
