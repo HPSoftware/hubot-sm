@@ -1,5 +1,6 @@
 #
 _ = require 'lodash'
+# To be removed
 module.exports = (robot, callback) ->
 
   helpIncident = [

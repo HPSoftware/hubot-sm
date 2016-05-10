@@ -6,8 +6,7 @@
 # Author:
 
 
-
-co = require 'co'
+# To be removed
 SM = require '../lib/smworker'
 Config = require '../lib/config'
 Help = require '../lib/sm-help'

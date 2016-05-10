@@ -7,7 +7,7 @@
 SM = require '../lib/smworker'
 Config = require '../lib/config'
 Help = require '../lib/sm-help'
-
+# To be removed
 module.exports = (robot) ->
   if not robot.sm_ext
     SmExt = require "../lib/sm-#{robot.adapterName}"

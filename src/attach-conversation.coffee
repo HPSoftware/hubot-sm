@@ -4,7 +4,7 @@ async = require 'async'
 S = require('string')
 Config = require '../lib/config'
 SM =  require '../lib/smworker'
-
+# To be removed
 # Bot command - resolve SM ticket with proposed solution
 #Syntax:
 #   @motieph: attach conversation to IM10392
