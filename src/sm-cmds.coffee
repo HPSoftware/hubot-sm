@@ -136,7 +136,7 @@ module.exports = (robot) ->
             robot.logger.debug "incident id is #{id}"
             robot.logger.debug "message count is #{messages.length}"
             texts = []
-            texts.push(resolveUser(m.text)) for m in messages
+            texts.push(reviseMessage(m)) for m in messages
             texts = texts.reverse()
             incident_data =
               "review.detail": ["attach conversation"],
@@ -159,7 +159,9 @@ module.exports = (robot) ->
 
   # helpers
   # Method to resolve user name from
-  resolveUser = (text)->
+  reviseMessage = (message)->
+    result = {}
+    text = message.text
     m = /<@([\w\d]+)(\|([\w]+))?>/ig.exec text
     # robot.logger.debug text
     if m
@@ -170,7 +172,11 @@ module.exports = (robot) ->
                       "[#{user.name}]"
       # robot.logger.debug user
       text = text.replace /<@([\w\d]+)(\|([\w]+))?>/ig, replaceText
-    text
+    result ={
+      text: text
+      attachments: message.attachments
+    }
+    return JSON.stringify(result)
   helpAttach = [
     "Please use `sm attach incident [ID]` to attach channel converstaion to Service Manager Incident"
   ]
