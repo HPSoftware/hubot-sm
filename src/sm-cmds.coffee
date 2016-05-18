@@ -178,7 +178,7 @@ module.exports = (robot) ->
     }
     return JSON.stringify(result)
   helpAttach = [
-    "Please use `sm attach incident [ID]` to attach channel converstaion to Service Manager Incident"
+    "Please use `sm attach-conversation incident [ID]` to attach channel converstaion to Service Manager Incident"
   ]
   helpSm = [
     "Hi, use `sm` to access Service Manager. Try following command to continue...",
@@ -220,6 +220,7 @@ module.exports = (robot) ->
     [verb, entity] = cmdline.split(/\s+/)
     # in case sm incident
     entity = entity or verb
+    verb = 'attach' if verb == 'attach-conversation'
 
     if not entity
       # print sm help
