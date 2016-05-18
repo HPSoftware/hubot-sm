@@ -189,7 +189,7 @@ module.exports = (robot) ->
     "Hi, you can do a lots on Service Manager Incident Management module",
     "* `sm get incident [ID] (on [sm instance])` - Get a Service Manager incident by ID",    
     "* `sm update incident [ID] [field1=value2] [field2=value2] (on [sm instance])` - Update a Service Manager incident",
-    "* `sm attach incident [ID] (on [sm instance])` - Attach conversation in this channel to Service Manager incident"
+    "* `sm attach-conversation incident [ID] (on [sm instance])` - Attach conversation in this channel to Service Manager incident"
   ]
 
   sendHelp = (channel, msg)->
