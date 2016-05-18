@@ -6,7 +6,7 @@ module.exports = (robot, callback) ->
   helpIncident = [
     "Hi, you can do a lots on Service Manager Incident Management module",
     "* `sm resolve incident [ID] [resolve message] (on [sm instance])` - Resolve a Service Manager incident",
-    "* `sm attach incident [ID] (on [sm instance])` - Attach conversation in this channel to Service Manager incident"
+    "* `sm attach-conversation incident [ID] (on [sm instance])` - Attach conversation in this channel to Service Manager incident"
   ]
 
   helpChange = [
