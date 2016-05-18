@@ -94,7 +94,7 @@ module.exports = (robot) ->
         resp.reply "Updating Incident #{id} on #{ins}<#{Config.get "sm.servers."+ins+".endpoint"}>....."
       attach: (fullCmdLine, resp)->
         room = resp.message.room
-        match = /sm\s+attach\s+incident\s*([\w\d]+)\s*(?:on (.+))?/i.exec fullCmdLine
+        match = /sm\s+attach-conversation\s+incident\s*([\w\d]+)\s*(?:on (.+))?/i.exec fullCmdLine
         if not match
           sendHelp room, helpAttach
           return
