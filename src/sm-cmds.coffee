@@ -222,9 +222,9 @@ module.exports = (robot) ->
     room = resp.message.room
     fullLine = resp.match[1]
     match = /sm(.*)$/i.exec fullLine
-    if not match
-      helpUnknown room, fullLine
-      return
+    # if not match
+    #   helpUnknown room, fullLine
+    #   return
 
     # we support following command so for
     # Syntax sm <verb> <entity> (params)
