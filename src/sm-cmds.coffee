@@ -19,6 +19,7 @@ Config = require '../lib/config'
 SM = require '../lib/smworker'
 async = require 'async'
 S = require('string')
+moment = require 'moment'
 module.exports = (robot) ->
   if not robot.sm_ext
     SmExt = require "../lib/sm-#{robot.adapterName}"
@@ -176,7 +177,7 @@ module.exports = (robot) ->
   # helpers
   # Method to resolve user name from
   reviseMessage = (message)->
-    result = {}
+    result = ""
     text = message.text
     m = /<@([\w\d]+)(\|([\w]+))?>/ig.exec text
     # robot.logger.debug text
@@ -188,11 +189,16 @@ module.exports = (robot) ->
                       "[#{user.name}]"
       # robot.logger.debug user
       text = text.replace /<@([\w\d]+)(\|([\w]+))?>/ig, replaceText
-    result ={
-      text: text
-      attachments: message.attachments
-    }
-    return JSON.stringify(result)
+
+    dateString = moment.unix(message.ts).format("MM/DD/YYYY HH:mm:SS")
+    user_name = message.username ? message.user 
+    entity = "#{dateString} #{user_name} #{text}\r\n"
+    result += entity
+    if message.attachments
+      _.each message.attachments ,(att)->
+        result += "\t * #{k}: #{v}\r\n" for k,v of att
+    result += "----------------------\r\n"
+    return result
   helpAttach = [
     "Please use `sm attach-conversation incident [ID]` to attach channel converstaion to Service Manager Incident"
   ]
