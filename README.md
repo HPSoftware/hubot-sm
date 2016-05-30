@@ -16,7 +16,7 @@ Then add **hubot-sm** to your `external-scripts.json`:
 ]
 ```
 
-See test hubot project https://github.hpe.com/IncubationLab/sm-chatops-test
+See test hubot project https://github.com/HPSoftware/sm-chatops-boot (TODO)
 
 ## Commands support
 
