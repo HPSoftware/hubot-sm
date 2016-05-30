@@ -47,7 +47,7 @@ sm incident attach ...
 ## Misc
 
 ### Config
-User put configuration in a json file, see example https://github.hpe.com/IncubationLab/sm-chatops-test/blob/master/config.json
+User put configuration in a json file, see example https://github.com/HPSoftware/sm-chatops-boot/blob/master/config.json (todo)
 ```json
 {
   "config":{
