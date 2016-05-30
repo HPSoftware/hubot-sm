@@ -64,7 +64,7 @@ User put configuration in a json file, see example https://github.com/HPSoftware
 ```
 So in the command, user can specify
 ```
-sm incident attach IM092
-sm incident attach IM928 on test
+sm get incident IM092
+sm update incident IM928 <...> on test
 ```
 Two commands are equivalent.
