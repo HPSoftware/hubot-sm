@@ -36,12 +36,11 @@ sm
 And it will print major SM modules supported
 ```
 sm incident
-sm change
 ```
 User can continue discover by typing `sm incident` and it will print out
 ```
 sm incident resolve ...
-sm incident attach ...
+sm incident attach-conversation ...
 ```
 
 ## Misc
