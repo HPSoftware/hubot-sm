@@ -6,7 +6,7 @@ A hubot script for Service Manager ChatOps integration
 
 In hubot project repo, run:
 
-`npm install hubot-sm --save`
+`npm install https://github.com/HPSoftware/hubot-sm.git --save`
 
 Then add **hubot-sm** to your `external-scripts.json`:
 
