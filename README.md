@@ -1,4 +1,4 @@
-# hubot-sm
+# Service Manager Hubot Integration
 
 A hubot script for Service Manager ChatOps integration
 
@@ -16,7 +16,7 @@ Then add **hubot-sm** to your `external-scripts.json`:
 ]
 ```
 
-See test hubot project https://github.com/HPSoftware/sm-chatops-boot (TODO)
+See the SM Hubot boot project https://github.com/HPSoftware/sm-chatops-boot for quick start.
 
 ## Commands support
 
@@ -46,7 +46,7 @@ sm incident attach-conversation ...
 ## Misc
 
 ### Config
-User put configuration in a json file, see example https://github.com/HPSoftware/sm-chatops-boot/blob/master/config.json (todo)
+User put configuration in a json file, see example https://github.com/HPSoftware/sm-chatops-boot/blob/master/config.json
 ```json
 {
   "config":{
