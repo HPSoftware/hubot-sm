@@ -44,8 +44,8 @@ All Hubot scripts that conform to the protocol stack of hubot-slack integrations
 
 The typical steps to add a new command are as follows:
 
-Add robot.respond to correlate to an event listener that waits to hear a specific key word or pattern.
-If the word or pattern matches, it will enter a code block to add your handlers.
+- Add robot.respond to correlate to an event listener that waits to hear a specific key word or pattern.
+- If the word or pattern matches, it will enter a code block to add your handlers.
 The following is a sample script to implement the 'sm close incident' command.
 ```js
 SM = require '../lib/smworker'
