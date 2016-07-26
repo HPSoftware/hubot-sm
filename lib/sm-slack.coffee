@@ -127,12 +127,6 @@ class SmExt
       timestamp: ts
     SlackApi.pins.add opts
     
-  getUser:(name)->
-    opts=
-      token: @botToken
-      user:name
-    SlackApi.users.info opts
-    
   listUsers: ()->
     opts=
       token: @botToken
