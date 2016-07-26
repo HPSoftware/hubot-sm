@@ -26,7 +26,6 @@ class SmExt
     @robot = robot
     @apiToken = apiToken
     @botToken = botToken
-    @users={}
     this.listUsers()
       .then (r)->
         for member in r.members
