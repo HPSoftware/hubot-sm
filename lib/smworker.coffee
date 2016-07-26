@@ -23,7 +23,6 @@ Promise = require 'bluebird'
 Config = require './config'
 Log            = require 'log'
 logger     = new Log process.env.HUBOT_LOG_LEVEL or 'info'
-
 handleResponse = (resolve, reject, e, body)->
   console.log "Handle response #{body}"
   if e
@@ -57,16 +56,45 @@ sm =
         incident.update("Incident": incident_data, (e, body)->
           handleResponse _resolve, reject, e, body
         )
+    create: (incident_data, ins) ->
+      new Promise (_resolve, reject) ->
+        endpoint = Config.get "sm.servers.#{ins}.endpoint"
+        [server, port] = endpoint.split(":")
+        account = Config.get "sm.servers.#{ins}.account"
+        incident = new IncidentMangement(server.trim(), port.trim(), account, Config.get "sm.servers.#{ins}.password")
+        incident.create("Incident": incident_data, (e, body)->
+          handleResponse _resolve, reject, e, body
+        )
   change:
     update: (id, change_data, ins)->
 
 #add shortcuts
 sm.incident.resolve = (id, msg, ins, byUser)->
   data =
-    Solution: [msg]
+    Solution: msg
     Status: "Resolved"
+    "UpdatedBy": byUser
     "JournalUpdates": ["Ticket resolved in ChatOps by #{byUser}"]
   sm.incident.update(id, data, ins)
+  
+sm.incident.assign = (id, people, ins, byUser)->
+  data =
+    Assignee: people
+    "UpdatedBy": byUser
+  sm.incident.update(id, data, ins)
+  
+sm.incident.addActivity = (id, msg, ins, byUser)->
+  data =
+    "UpdatedBy": byUser
+    "JournalUpdates": [msg]
+  sm.incident.update(id, data, ins)  
+  
+sm.incident.createIncident = (title, ins, byUser)->
+  data =
+    "OpenedBy":byUser
+    "Title":title
+    "Description":[title]
+  sm.incident.create(data, ins) 
 
 sm.change.approve = (id, msg, ins, byUser)->
 

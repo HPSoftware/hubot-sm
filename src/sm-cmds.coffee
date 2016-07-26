@@ -50,6 +50,90 @@ module.exports = (robot) ->
             robot.emit 'slack.attachment', msg
 
         resp.reply "Retrieving Incident #{id}..."
+      assign: (fullCmdLine, resp)->
+        room = resp.message.room
+        match = /sm\s+assign\s+incident\s+([\w\d]+)\s+([\S]+)(?:\s+on\s+([\w\d]+))?/i.exec fullCmdLine
+        if not match
+          sendHelp room, ["Please use `sm assign incident [ID][name]` to assign or re-assiagn an instance of Service Manager Incident", "For other commands, please check `sm`"]
+          return
+        id = match[1]
+        people = match[2]
+        orginal_people = people
+        ins = match[3] or Config.get "sm.servers.default"
+        if people.indexOf("@") < 0
+          email = robot.sm_ext.getEmailByName people
+          if email != null
+            people =email
+        SM.incident.assign(id, people, ins, resp.message.user.email_address)
+          .then (r)->
+            resp.reply "Good news! Incident #{id} was assigned to #{orginal_people} successfully."
+          .catch (r) ->
+            msg = robot.sm_ext.buildSlackMsgFromSmError "Failed to update incident #{id}", resp.message.rawMessage.channel, r
+            robot.logger.debug msg
+            resp.reply "Bad news! Failed to assign Incident #{id} to #{orginal_people}. Please make sure the name of the specified assignee is correct!"
+            
+        resp.reply "Got it. Trying to assign Incident #{id} to #{orginal_people}"
+      resolve: (fullCmdLine, resp)->
+        room = resp.message.room
+        match = /sm\s+resolve\s+incident\s+([\w\d]+)\s+\"([^\"]*)\"(?:\s+on\s+([\w\d]+))?/i.exec fullCmdLine
+        if not match
+          sendHelp room, ["Please use `sm resolve incident [ID] \"[solution]\"` to resolve an instance of Service Manager Incident", "For other commands, please check `sm`"]
+          return
+        id = match[1]
+        solution = match[2]
+        ins = match[3] or Config.get "sm.servers.default"
+        
+        SM.incident.resolve(id, solution, ins,resp.message.user.email_address)
+          .then (r)->
+             resp.reply "Cheers! The solution was updated and incident #{id} was resolved successfully!"
+          .catch (r) ->
+            robot.logger.debug r
+            msg = robot.sm_ext.buildSlackMsgFromSmError "Failed to update incident #{id}", resp.message.rawMessage.channel, r
+            robot.emit 'slack.attachment', msg
+
+        resp.reply "Good job! Let me update the solution for incident #{id}."
+      addactivity: (fullCmdLine, resp)->
+        room = resp.message.room
+        match = /sm\s+addactivity\s+incident\s+([\w\d]+)\s+\"([^\"]*)\"(?:\s+on\s+([\w\d]+))?/i.exec fullCmdLine
+        if not match
+          sendHelp room, ["Please use `sm addactivity incident [ID] \"[activity]\"` to add activity for an instance of Service Manager Incident", "For other commands, please check `sm`"]
+          return
+        id = match[1]
+        activity = match[2]
+        ins = match[3] or Config.get "sm.servers.default"
+        
+        SM.incident.addActivity(id, activity, ins, resp.message.user.email_address)
+          .then (r)->
+            resp.reply "One activity was added to incident #{id} successfully!"
+          .catch (r) ->
+            robot.logger.debug r
+            msg = robot.sm_ext.buildSlackMsgFromSmError "Failed to update incident #{id}", resp.message.rawMessage.channel, r
+            robot.emit 'slack.attachment', msg
+
+        resp.reply "No problem, I will add the activity for Incident #{id}!"
+      create: (fullCmdLine, resp)->
+        room = resp.message.room
+        match = /sm\s+create\s+incident\s+\"([^\"]*)\"(?:\s+on\s+([\w\d]+))?/i.exec fullCmdLine
+        if not match
+          sendHelp room, ["Please use `sm create incident \"[description]\"` to create an instance of Service Manager Incident", "For other commands, please check `sm`"]
+          return
+        title = match[1]
+        ins = match[2] or Config.get "sm.servers.default"
+        
+        SM.incident.createIncident(title, ins,resp.message.user.name)
+          .then (r)->
+            resp.reply "Incident #{r.body.Incident.IncidentID} was created!"
+            msg = robot.sm_ext.formatRecord r.body.Incident
+            msg.channel = resp.message.rawMessage.channel
+            msg.text = "Incident `#{r.body.Incident.IncidentID}` - #{r.body.Incident.Title}"
+            msg.attachments[0].text = r.body.Incident.Description.join("\r")
+            robot.emit 'slack.attachment', msg
+          .catch (r) ->
+            robot.logger.debug r
+            msg = robot.sm_ext.buildSlackMsgFromSmError "Failed to create incident", resp.message.rawMessage.channel, r
+            robot.emit 'slack.attachment', msg
+        resp.reply "Okay. I am trying to create an incident record for you..."
+        
       update: (fullCmdLine, resp)->
         room = resp.message.room
         match = /sm\s+update\s+incident(.*)/i.exec fullCmdLine
@@ -209,7 +293,11 @@ module.exports = (robot) ->
 
   helpIncident = [
     "Hi, you can do a lots on Service Manager Incident Management module",
-    "* `sm get incident [ID] (on [sm instance])` - Get a Service Manager incident by ID",    
+    "* `sm get incident [ID] (on [sm instance])` - Get a Service Manager incident by ID", 
+    "* `sm assign incident [ID] [people] (on [sm instance])` - assign an special incident to a people",   
+    "* `sm resolve incident [ID] \"[solution]\" (on [sm instance])` - resolve an incident by solution", 
+    "* `sm addactivity incident [ID] \"[activity]\" (on [sm instance])` - add special activity to an incident", 
+    "* `sm create incident \"[title]\" (on [sm instance])` - create an incident",
     "* `sm update incident [ID] [field1=value2] [field2=value2] (on [sm instance])` - Update a Service Manager incident",
     "* `sm attach-conversation incident [ID] (on [sm instance])` - Attach conversation in this channel to Service Manager incident"
   ]

@@ -82,24 +82,24 @@ class IncidentMangement extends RestMethod
     @incident_id = null
 
   get: (id, callback) ->
-    url = "#{@baseurl}/incidents/#{id}"
+    url = "#{@baseurl}/chatopsincidents/#{id}"
     @.getResp(url, callback)
     @incident_id = id
 
   getlist: (callback) ->
-    url = "#{@baseurl}/incidents"
+    url = "#{@baseurl}/chatopsincidents"
     @.getResp(url, callback)
 
   create: (opts, callback = null) ->
-    url = "#{@baseurl}/incidents"
+    url = "#{@baseurl}/chatopsincidents"
     @.postResp(url, opts, callback)
 
   update: (opts, callback = null) ->
-    url = "#{@baseurl}/incidents/#{@incident_id}/action/update"
+    url = "#{@baseurl}/chatopsincidents/#{@incident_id}/action/update"
     @.postResp(url, opts, callback)
 
   close: (opts,callback=null)->
-    url = "#{@baseurl}/incidents/#{@incident_id}/action/close"
+    url = "#{@baseurl}/chatopsincidents/#{@incident_id}/action/close"
     @.postResp(url,opts,callback)
 
 
