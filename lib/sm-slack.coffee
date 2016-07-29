@@ -20,12 +20,21 @@ Querystring = require 'querystring'
 SlackApi = require './slack_web_api'
 Promise = require 'bluebird'
 _ = require 'lodash'
+_users={}
 class SmExt
   constructor: (robot, apiToken = process.env.SLACK_APP_TOKEN, botToken=process.env.HUBOT_SLACK_TOKEN)->
     @robot = robot
     @apiToken = apiToken
     @botToken = botToken
-
+    this.listUsers()
+      .then (r)->
+        for member in r.members
+          if member.profile.email != null && member.profile.email != undefined
+            _users[member.name]=member.profile.email.toString()
+      .catch (r)->
+        robot.logger.info r
+        
+       
   formatRecord: (record)->
     fields = _.omitBy record, (v)->
       Array.isArray v
@@ -117,7 +126,15 @@ class SmExt
       channel: channelId
       timestamp: ts
     SlackApi.pins.add opts
-
-
-
+    
+  listUsers: ()->
+    opts=
+      token: @botToken
+    SlackApi.users.list opts
+  
+  getEmailByName: (name)->
+    if _users.hasOwnProperty name
+      return _users[name]
+    return null
+           
 module.exports = SmExt
