@@ -24,6 +24,7 @@ module.exports = (robot) ->
   if not robot.sm_ext
     SmExt = require "../lib/sm-#{robot.adapterName}"
     robot.sm_ext = new SmExt(robot)
+   
   # mapping
   sm =
     incident:
@@ -294,10 +295,10 @@ module.exports = (robot) ->
   helpIncident = [
     "Hi, you can do a lots on Service Manager Incident Management module",
     "* `sm get incident [ID] (on [sm instance])` - Get a Service Manager incident by ID", 
-    "* `sm assign incident [ID] [people] (on [sm instance])` - assign an special incident to a people",   
-    "* `sm resolve incident [ID] \"[solution]\" (on [sm instance])` - resolve an incident by solution", 
-    "* `sm addactivity incident [ID] \"[activity]\" (on [sm instance])` - add special activity to an incident", 
-    "* `sm create incident \"[title]\" (on [sm instance])` - create an incident",
+    "* `sm assign incident [ID] [person] (on [sm instance])` - Assign or reassign an incident to somebody (by email, SM username or Slack username)",   
+    "* `sm resolve incident [ID] \"[solution]\" (on [sm instance])` - Resolve an incident by providing a solution", 
+    "* `sm addactivity incident [ID] \"[activity]\" (on [sm instance])` - Add an activity to an incident", 
+    "* `sm create incident \"[title]\" (on [sm instance])` - Create an incident",
     "* `sm update incident [ID] [field1=value2] [field2=value2] (on [sm instance])` - Update a Service Manager incident",
     "* `sm attach-conversation incident [ID] (on [sm instance])` - Attach conversation in this channel to Service Manager incident"
   ]
