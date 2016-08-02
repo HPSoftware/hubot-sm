@@ -41,7 +41,7 @@ class SmExt
     fields = _.map fields, (v, k)->
         r =
           title: k
-          value: v
+          value: v.toString()
           short: true
     att =
       fields: fields
