@@ -125,7 +125,7 @@ module.exports = (robot) ->
         title = match[1]
         ins = match[2] or Config.get "sm.servers.default"
         
-        SM.incident.createIncident(title, ins,resp.message.user.name)
+        SM.incident.createIncident(title, ins,resp.message.user.email_address)
           .then (r)->
             resp.reply "Incident #{r.body.Incident.IncidentID} was created!"
             msg = robot.sm_ext.formatRecord r.body.Incident
