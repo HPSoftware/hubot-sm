@@ -229,6 +229,8 @@ module.exports = (robot) ->
                     result = _.concat(result, data.messages)
                     latest_ts = _.last(data.messages).ts if data.messages and data.messages.length > 1
                     cb1(null)
+                  .catch (r) ->
+                    resp.reply "Fail to attaching converstaion to Service Manager Incident #{id}.\n*Reason*: #{r}"
               (err)->
                 cb(null, result)
             )
