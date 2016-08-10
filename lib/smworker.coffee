@@ -89,10 +89,11 @@ sm.incident.addActivity = (id, msg, ins, byUser)->
     "JournalUpdates": [msg]
   sm.incident.update(id, data, ins)  
   
-sm.incident.createIncident = (title, ins, byUser)->
+sm.incident.createIncident = (title, ins, createchannel, byUser)->
   data =
     "OpenedBy":byUser
     "Title":title
+    "IncidentID":createchannel
     "Description":[title]
   sm.incident.create(data, ins) 
 
