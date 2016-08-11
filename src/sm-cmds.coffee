@@ -118,15 +118,18 @@ module.exports = (robot) ->
         resp.reply "No problem, I will add the activity for Incident #{id}!"
       create: (fullCmdLine, resp)->
         room = resp.message.room
-        match = /sm\s+create\s+incident\s+\"([^\n]*)\"(?:\s+on\s+([\w\d]+))?/i.exec fullCmdLine
+        match = /sm\s+create\s+incident\s+\"([^\n]*)\"(?:\s+(-channel))?(?:\s+on\s+([\w\d]+))?/i.exec fullCmdLine
         if not match
-          sendHelp room, ["Please use `sm create incident \"[description]\"` to create an instance of Service Manager Incident", "For other commands, please check `sm`"]
+          sendHelp room, ["Please use `sm create incident \"[description]\"`{-channel} to create an instance of Service Manager Incident, use -channel will create a new channel", "For other commands, please check `sm`"]
           return
         title = match[1]
-        ins = match[2] or Config.get "sm.servers.default"
-        
-        SM.incident.createIncident(title, ins,resp.message.user.email_address)
+        createchannel=match[2] or false
+        ins = match[3] or Config.get "sm.servers.default"
+        if false!=createchannel
+          createchannel=true
+        SM.incident.createIncident(title, ins, createchannel, resp.message.user.email_address)
           .then (r)->
+            robot.logger.debug r
             resp.reply "Incident #{r.body.Incident.IncidentID} was created!"
             msg = robot.sm_ext.formatRecord r.body.Incident
             msg.channel = resp.message.rawMessage.channel
@@ -217,7 +220,11 @@ module.exports = (robot) ->
         result = []
         has_more = true
         # TODO: this is Slack specific
+        robot.logger.info "start to attach"
         channel = resp.message.rawMessage.channel
+        robot.logger.info "channel is "+resp
+        robot.logger.info resp.message
+        robot.logger.info resp.message.rawMessage
         async.waterfall([
           (cb)->
             async.whilst(
@@ -230,6 +237,7 @@ module.exports = (robot) ->
                     latest_ts = _.last(data.messages).ts if data.messages and data.messages.length > 1
                     cb1(null)
                   .catch (r) ->
+                    robot.logger.info "gethistory error "+r
                     resp.reply "Fail to attaching converstaion to Service Manager Incident #{id}.\n*Reason*: #{r}"
               (err)->
                 cb(null, result)
@@ -304,7 +312,7 @@ module.exports = (robot) ->
     "* `sm assign incident [ID] [person] (on [sm instance])` - Assign or reassign an incident to somebody (by email, SM username or Slack username)",   
     "* `sm resolve incident [ID] \"[solution]\" (on [sm instance])` - Resolve an incident by providing a solution", 
     "* `sm addactivity incident [ID] \"[activity]\" (on [sm instance])` - Add an activity to an incident", 
-    "* `sm create incident \"[description]\" (on [sm instance])` - Create an incident",
+    "* `sm create incident \"[description]\" -channel (on [sm instance])` - Create an incident, if use -channel, it will create a new channel",
     "* `sm update incident [ID] [field1=value2] [field2=value2] (on [sm instance])` - Update a Service Manager incident",
     "* `sm attach-conversation incident [ID] (on [sm instance])` - Attach conversation in this channel to Service Manager incident"
   ]
