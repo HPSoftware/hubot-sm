@@ -312,7 +312,7 @@ module.exports = (robot) ->
     "* `sm assign incident [ID] [person] (on [sm instance])` - Assign or reassign an incident to somebody (by email, SM username or Slack username)",   
     "* `sm resolve incident [ID] \"[solution]\" (on [sm instance])` - Resolve an incident by providing a solution", 
     "* `sm addactivity incident [ID] \"[activity]\" (on [sm instance])` - Add an activity to an incident", 
-    "* `sm create incident \"[description]\" -channel (on [sm instance])` - Create an incident and an optional channel (omit "-channel" to not create a channel)",
+    "* `sm create incident \"[description]\" -channel (on [sm instance])` - Create an incident and an optional channel (omit '-channel' to not create a channel)",
     "* `sm update incident [ID] [field1=value2] [field2=value2] (on [sm instance])` - Update a Service Manager incident",
     "* `sm attach-conversation incident [ID] (on [sm instance])` - Attach conversation in this channel to Service Manager incident"
   ]
