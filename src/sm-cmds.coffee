@@ -39,11 +39,10 @@ module.exports = (robot) ->
 
         SM.incident.get(id, ins)
           .then (r)->
-            robot.logger.debug "Success #{r}"
             msg = robot.sm_ext.formatRecord r.body.Incident
             msg.channel = resp.message.rawMessage.channel
-            msg.text = "Incident `#{id}` - #{r.body.Incident.Title}"
-            msg.attachments[0].text = r.body.Incident.Description.join("\r")
+            #msg.text = "Incident `#{id}` - #{r.body.Incident.Title}"
+            #msg.attachments[0].text = r.body.Incident.Description.join("\r")
             robot.emit 'slack.attachment', msg
           .catch (r) ->
             robot.logger.debug r
@@ -194,7 +193,18 @@ module.exports = (robot) ->
         SM.incident.update(id, keyValues, ins)
           .then (r)->
             robot.logger.debug r
-            resp.reply "Incident #{id} updated"
+            wrongmsg = null;
+            for msg in r.body.Messages
+              if msg.indexOf(":{")!=-1 and msg.indexOf("}")!=-1
+                nextpos=msg.indexOf(msg.indexOf(":{")+3,":")
+                attrname=msg.substring(msg.indexOf(":{")+3,nextpos);
+                robot.logger.info "find ignore field:"+attrname
+                if keyValues[attrname] != null
+                  wrongmsg=msg
+            if wrongmsg == null
+              resp.reply "Incident #{id} updated"
+            else
+              resp.reply "Incident #{id} was updated, but some fields may be wrong."+wrongmsg
           .catch (r) ->
             robot.logger.debug r
             msg = robot.sm_ext.buildSlackMsgFromSmError "Failed to update incident #{id}", resp.message.rawMessage.channel, r
@@ -277,25 +287,47 @@ module.exports = (robot) ->
   # Method to resolve user name from
   reviseMessage = (message)->
     result = ""
+    user_name = message.username
+    if message.username == undefined
+      user = robot.brain.userForId message.user
+      user_name=user.name 
     text = message.text
+    #m = /<@([\w\d]+)(\|([\w]+))?>/ig.exec text
     m = /<@([\w\d]+)(\|([\w]+))?>/ig.exec text
     # robot.logger.debug text
     if m
-      user = robot.brain.userForId m[1]
-      replaceText = if user.email_address
-                      "[#{user.name}:#{user.email_address}]"
-                    else
-                      "[#{user.name}]"
+      if m[2]==undefined
+        user = robot.brain.userForId m[1] 
+        if user_name != user.name
+          replaceText = '@'+user.name
+        else
+          replaceText =""        
+      else if m[3] != undefined
+        if user_name != m[3]
+          replaceText = '@'+m[3]
+        else
+          replaceText =""   
       # robot.logger.debug user
       text = text.replace /<@([\w\d]+)(\|([\w]+))?>/ig, replaceText
 
     dateString = moment.unix(message.ts).format("MM/DD/YYYY HH:mm:SS")
-    user_name = message.username ? message.user 
+    
+    
     entity = "#{dateString} #{user_name} #{text}\r\n"
     result += entity
     if message.attachments
       _.each message.attachments ,(att)->
-        result += "\t * #{k}: #{v}\r\n" for k,v of att
+        if att.fields != null && att.fields != undefined
+          k=1
+          col=""
+          for field in att.fields
+            if k%2==1
+              col += "\t * #{field.title}: #{field.value}\t\t"
+            else
+              col +="\t\t#{field.title}: #{field.value}\r\n"              
+              result += col
+              col="";
+            k++
     result += "----------------------\r\n"
     return result
   helpAttach = [
@@ -331,9 +363,9 @@ module.exports = (robot) ->
     room = resp.message.room
     fullLine = resp.match[1]
     match = /sm(.*)$/i.exec fullLine
-    # if not match
-    #   helpUnknown room, fullLine
-    #   return
+    if not match
+      helpUnknown room, fullLine
+      return
 
     # we support following command so for
     # Syntax sm <verb> <entity> (params)
