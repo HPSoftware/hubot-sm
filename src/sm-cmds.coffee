@@ -132,8 +132,8 @@ module.exports = (robot) ->
             resp.reply "Incident #{r.body.Incident.IncidentID} was created!"
             msg = robot.sm_ext.formatRecord r.body.Incident
             msg.channel = resp.message.rawMessage.channel
-            msg.text = "Incident `#{r.body.Incident.IncidentID}` - #{r.body.Incident.Title}"
-            msg.attachments[0].text = r.body.Incident.Description.join("\r")
+            #msg.text = "Incident `#{r.body.Incident.IncidentID}` - #{r.body.Incident.Title}"
+            #msg.attachments[0].text = r.body.Incident.Description.join("\r")
             robot.emit 'slack.attachment', msg
           .catch (r) ->
             robot.logger.debug r
