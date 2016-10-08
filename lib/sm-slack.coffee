@@ -36,7 +36,7 @@ class SmExt
         
        
   formatRecord: (record)->
-    slackform =["IncidentID", "RequestedBy","Status", "ContactPerson","Phase", "Company", "Location","PrimaryAffectedService","PrimaryAffectedServiceID","MajorIncident",  "AffectedCI","AffectedCIGlobalID","Escalated", "IncidentManager", "Category","Impact","SubCategory","Urgency","Area","Priority","AssignmentGroup","Source", "Assignee","CompletionCode", "Solution", "OpenTime", "ClosedTime", "ClosedBy" ]
+    slackform =["IncidentID", "RequestedBy","Status", "ContactPerson","Phase", "Company", "Location","PrimaryAffectedService","PrimaryAffectedServiceUCMDBID","MajorIncident",  "AffectedCI","AffectedCIGlobalID","Escalated", "IncidentManager", "Category","Impact","SubCategory","Urgency","Area","Priority","AssignmentGroup","Source", "Assignee","CompletionCode", "Solution", "OpenTime", "ClosedTime", "ClosedBy" ]
     fields = []
     if record["Title"] != undefined && record["Description"]!=undefined
       r =
