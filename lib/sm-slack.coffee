@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and limitations under the License. 
 ###
 
-
+#"Title", "Description",, "JournalUpdates", "UpdatedTime", "UpdatedBy" 
 # SM actions for Slack
 
 Querystring = require 'querystring'
@@ -36,13 +36,21 @@ class SmExt
         
        
   formatRecord: (record)->
-    fields = _.omitBy record, (v)->
-      Array.isArray v
-    fields = _.map fields, (v, k)->
+    slackform =["IncidentID", "RequestedBy","Status", "ContactPerson","Phase", "Company", "Location","PrimaryAffectedService","PrimaryAffectedServiceUCMDBID","MajorIncident",  "AffectedCI","AffectedCIGlobalID","Escalated", "IncidentManager", "Category","Impact","SubCategory","Urgency","Area","Priority","AssignmentGroup","Source", "Assignee","CompletionCode", "Solution", "OpenTime", "ClosedTime", "ClosedBy" ]
+    fields = []
+    if record["Title"] != undefined && record["Description"]!=undefined
+      r =
+        title: record["IncidentID"].toString()+"- "+record["Title"].toString()
+        value: record["Description"].toString()
+        short: false
+      fields.push(r)
+    for field in slackform
+      if record[field] != null && undefined != record[field]
         r =
-          title: k
-          value: v.toString()
+          title: field
+          value: record[field].toString()
           short: true
+        fields.push(r)
     att =
       fields: fields
       mrkdwn_in: ["text", "pretext"]

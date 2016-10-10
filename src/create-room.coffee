@@ -68,15 +68,19 @@ module.exports = (robot) ->
       # format
 #      channelName = msgObj.service + msgObj.id
       # we need to prefix with instance name and make sure it is less than 21
-      servers = Config.get 'sm.servers'
+      default_ins = Config.get "sm.servers.default"
+      default_endpoint = Config.get "sm.servers.#{default_ins}.endpoint"
       endpoint = "#{msgObj.metaInfo.server}:#{msgObj.metaInfo.port}"
-      # get alias by endpoint
-      name = _.findKey(servers, (v)->
-        v and v.endpoint is endpoint
-      )
+      if default_endpoint == endpoint
+        name=default_ins
+      else
+        servers = Config.get 'sm.servers'
+        # get alias by endpoint
+        name = _.findKey(servers, (v)->
+          v and v.endpoint is endpoint
+        )
       if not name then name = endpoint
       channelName = robot.sm_ext.formatChannelName name, msgObj.room_name
-      # channelName = msgObj.room_name
       buf = new Buffer(msgObj.docengine_url,'base64')
       docengine_url = buf.toString('utf8')
       robot.logger.debug "doc engine url is #{docengine_url}"
