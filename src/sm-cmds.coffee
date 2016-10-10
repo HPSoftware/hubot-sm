@@ -207,8 +207,7 @@ module.exports = (robot) ->
               resp.reply "Incident #{id} was updated, but some fields may be wrong."+wrongmsg
           .catch (r) ->
             robot.logger.debug r
-            msg = robot.sm_ext.buildSlackMsgFromSmError "Failed to update incident #{id}", resp.message.rawMessage.channel, r
-            robot.emit 'slack.attachment', msg
+            resp.reply "Failed to update incident #{id}"+"\r*Reason*: #{r.body.Messages.join('\r')}"
 
         resp.reply "Updating Incident #{id} on #{ins}<#{Config.get "sm.servers."+ins+".endpoint"}>....."
       attach: (fullCmdLine, resp)->
