@@ -339,8 +339,7 @@ module.exports = (robot) ->
   ]
 
   helpIncident = [
-    "Invalid command.",
-    "Here are the all supported commands for Service Manager Incident Management module:",
+    "Please use the following commands to access the Service Manager Incident Management module:",
     "* `sm get incident [ID] (on [sm instance])` - Retrieve the details of an incident by incident ID (e.g. IM10001)",
     "* `sm assign incident [ID] [person] (on [sm instance])` - Assign or reassign an incident to a person ([person] can be an email address, SM username, or Slack username)",
     "* `sm resolve incident [ID] \"[solution]\" (on [sm instance])` - Resolve an incident by providing a solution",
