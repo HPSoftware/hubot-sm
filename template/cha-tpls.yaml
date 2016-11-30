@@ -1,0 +1,305 @@
+# Copyright 2016 Hewlett-Packard Development Company, L.P.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# http://www.apache.org/licenses/LICENSE-2.0
+# Unless required by applicable law or agreed to in writing,
+# Software distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and limitations under the License.
+
+
+labels:
+  severity: Severity
+  affectedService: Affected Service
+  cobot: Cobot
+  service: Service
+  from-incident: From Incident
+  fortify: Fortify
+
+style:
+  colors:
+    high: danger
+    OK: good
+
+templates:
+  incidentformat: |
+    {
+      "mrkdwn": true,
+      "parts":[
+        {
+          "mrkdwn_in": ["text", "pretext"],
+          "color": "warning",
+          "fields": [
+             {
+               "title": "{IncidentID}-{Title}",
+               "value": "{Description}",
+               "short": "false"
+             },
+             {
+               "title": "IncidentID",
+               "value": "{IncidentID}",
+               "short": true
+             }{?RequestedBy},
+             {
+               "title": "RequestedBy",
+               "value": "{RequestedBy}",
+               "short": true
+             }{/RequestedBy},
+             {
+               "title": "Status",
+               "value": "{Status}",
+               "short": true
+             }{?ContactPerson},
+             {
+               "title": "ContactPerson",
+               "value": "{ContactPerson}",
+               "short": true
+             }{/ContactPerson}{?Phase},
+             {
+               "title": "Phase",
+               "value": "{Phase}",
+               "short": true
+             }{/Phase}{?Company},
+             {
+               "title": "Company",
+               "value": "{Company}",
+               "short": true
+             }{/Company}{?Location},
+             {
+               "title": "Location",
+               "value": "{Location}",
+               "short": true
+             }{/Location},
+             {
+               "title": "PrimaryAffectedService",
+               "value": "{PrimaryAffectedService}",
+               "short": true
+             }{?PrimaryAffectedServiceUCMDBID},
+             {
+               "title": "PrimaryAffectedServiceUCMDBID",
+               "value": "{PrimaryAffectedServiceUCMDBID}",
+               "short": true
+             }{/PrimaryAffectedServiceUCMDBID}
+             {?MajorIncident},
+             {
+               "title": "MajorIncident",
+               "value": "{MajorIncident}",
+               "short": true
+             }{/MajorIncident}
+             {?AffectedCI},
+             {
+               "title": "AffectedCI",
+               "value": "{AffectedCI}",
+               "short": true
+             }{/AffectedCI}
+             {?AffectedCIGlobalID},
+             {
+               "title": "AffectedCIGlobalID",
+               "value": "{AffectedCIGlobalID}",
+               "short": true
+             }{/AffectedCIGlobalID}
+             {?Escalated},{
+             
+               "title": "Escalated",
+               "value": "{Escalated}",
+               "short": true
+             }{/Escalated}{?IncidentManager},
+             {
+               "title": "IncidentManager",
+               "value": "{IncidentManager}",
+               "short": true
+             }{/IncidentManager}{?Category},
+             {
+               "title": "Category",
+               "value": "{Category}",
+               "short": true
+             }{/Category}{?Impact},
+             {
+               "title": "Impact",
+               "value": "{Impact}",
+               "short": true
+             }{/Impact}{?SubCategory},
+             {
+               "title": "SubCategory",
+               "value": "{SubCategory}",
+               "short": true
+             }{/SubCategory}{?Urgency},
+             {
+               "title": "Urgency",
+               "value": "{Urgency}",
+               "short": true
+             }{/Urgency}{?Area},
+             {
+               "title": "Area",
+               "value": "{Area}",
+               "short": true
+             }{/Area}{?Priority},
+             {
+               "title": "Priority",
+               "value": "{Priority}",
+               "short": true
+             }{/Priority}{?AssignmentGroup},
+             {
+               "title": "AssignmentGroup",
+               "value": "{AssignmentGroup}",
+               "short": true
+             }{/AssignmentGroup}{?Source},
+             {
+               "title": "Source",
+               "value": "{Source}",
+               "short": true
+             }{/Source}{?Assignee},
+             {
+               "title": "Assignee",
+               "value": "{Assignee}",
+               "short": true
+             }{/Assignee}{?CompletionCode},
+             {
+               "title": "CompletionCode",
+               "value": "{CompletionCode}",
+               "short": true
+             }{/CompletionCode}{?Solution},
+             {
+               "title": "Solution",
+               "value": "{Solution}",
+               "short": true
+             }{/Solution}{?OpenTime},
+             {
+               "title": "OpenTime",
+               "value": "{OpenTime}",
+               "short": true
+             }{/OpenTime}{?ClosedTime},
+             {
+               "title": "ClosedTime",
+               "value": "{ClosedTime}",
+               "short": true
+             }{/ClosedTime}{?ClosedBy},
+             {
+               "title": "ClosedBy",
+               "value": "{ClosedBy}",
+               "short": true
+             }{/ClosedBy}
+          ]
+        }
+      ]
+    }
+  kick_off_warroom: |
+    {
+      "text": "{@t val="Namespace"/} {@c}{id}{/c} {@t val="kicked off"/} {@t val="the war room"/}{~n}",
+      "parts":[
+        {
+          "title": "{title}",
+          "text": "{description}",
+          "color": "{severity|color}",
+          "fields": [
+             {
+               "title": "{@label t="severity"/}",
+               "value": "{severity}"
+             },
+             {
+               "title": "{@label t="affectedService"/}",
+               "value": "{affectedService.name}"
+             }
+          ]
+        }
+      ]
+    }
+  get_incident_info: |
+    {
+      "text": "Retrieving Incident {id}..."
+    }
+  assign_incident_info: |
+    {
+      "text": "Assigning Incident {id} to {orginal_people}..."
+    }
+  assign_incident_ok: |
+    {
+      "text": "Incident {id} was assigned to {orginal_people}."
+    }
+  resolve_incident_info: |
+    {
+      "text": "Resolving incident {id}..."
+    }
+  resolve_incident_ok: |
+    {
+      "text": "Incident {id} was resolved."
+    }
+  addactivity_incident_info: |
+    {
+      "text": "Adding the activity to incident {id}..."
+    }
+  addactivity_incident_ok: |
+    {
+      "text": "The activity was added to incident {id}."
+    } 
+  create_incident_info: |
+    {
+      "text": "Creating new incident..."
+    }
+  create_incident_ok: |
+    {
+      "text": "Incident {IncidentID} was created!"
+    }
+  update_incident_info: |
+    {
+      "text": "Updating incident {id}..."
+    }
+  update_incident_ok: |
+    {
+      "text": "Incident {id} was created!"
+    } 
+  update_incident_error: |
+    {
+      "text": "Incident {id} was updated, but some fields may be wrong.{error}"
+    }
+  attach_incident_info: |
+    {
+      "text": "Attaching the conversation to Incident {id}..."
+    } 
+  attach_incident_ok: |
+    {
+      "text": "The conversation was attached to incident {id}."
+    }  
+  creating_release: |
+    {
+      "text": "{@label t="cobot"/} is creating a new {@c}Release{/c} including {@c}Defect{/c} {@c}{id}{/c}..."
+    }
+  new_defect: |
+    {
+      "text": "New defect {@c}{id}{/c} was created by {@label t="cobot"/}",
+      "parts":[
+        {
+          "title": "{title}",
+          "text": "{description}",
+          "fields":[
+            {
+              "title":"{@label t="service"/}",
+              "value": "{service.name}"
+            },
+            {
+              "title": "{@label t="from-incident"/}",
+              "value": "{@c}{from.incident}{/c}"
+            }
+          ]
+        }
+      ]
+    }
+  new_release: |
+    {
+      "text": "New Release {@c}{id}{/c}-{@b}{name}{/b} was created by {@label t="cobot"/}{~n} Including following defects {~n}{>"cha.api.widget.list" items=defects/}"
+    }
+  scan_started: |
+    {
+      "text": "{@label t="fortify"/} scan {@c}{id}{/c} started. {~n} For `Release` {@b}{targetRelease.name}{/b}-{@c}{targetRelease.id}{/c}"
+    }
+  scan_finished: |
+    {
+      "text": "{@label t="fortify"/} scan {@c}{id}{/c} Finished",
+      "parts":[
+        {
+          "text": "For `Release` {@b}{targetRelease.name}{/b} - {@c}{targetRelease.id}{/c}",
+          "color": "{result|color}"
+        }
+      ]
+    }

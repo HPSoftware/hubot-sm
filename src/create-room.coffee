@@ -51,20 +51,18 @@ module.exports = (robot) ->
   robot.listen(
     (msg) ->
       # This is bit slack specific
-      robot.logger.debug "check CreateRoom- Listen message: #{msg.text}"
-      # robot.logger.debug msg
-      robot.adapterName is 'slack' and /!create-room\s+(.*)/i.test(msg.rawText)
+      robot.adapterName is 'slack' and /!create-room\s+(.*)/i.test(msg.text)
     (resp) ->
-      robot.logger.debug 'To create a room'
+      robot.logger.debug('To create a room')
       # robot.logger.debug resp
       msg = resp.message
       msgObj = {}
-      # cp = new CreateRoomCommandParser(msg.rawText)
+      # cp = new CreateRoomCommandParser(msg.text)
       # cp.parse()
 
-      roomInfo = parseRoomInfo /!create-room (.*)/i.exec(msg.rawText)[1]
+      roomInfo = parseRoomInfo /!create-room (.*)/i.exec(msg.text)[1]
       msgObj = _.merge({}, roomInfo)
-      robot.logger.debug msgObj
+      robot.logger.debug(msgObj)
       # format
 #      channelName = msgObj.service + msgObj.id
       # we need to prefix with instance name and make sure it is less than 21
@@ -83,8 +81,8 @@ module.exports = (robot) ->
       channelName = robot.sm_ext.formatChannelName name, msgObj.room_name
       buf = new Buffer(msgObj.docengine_url,'base64')
       docengine_url = buf.toString('utf8')
-      robot.logger.debug "doc engine url is #{docengine_url}"
-      robot.logger.debug 'To create a new channel: ' + channelName
+      robot.logger.debug("doc engine url is #{docengine_url}")
+      robot.logger.debug('To create a new channel: ' + channelName)
       # What we do following here
       # 1. Create a new Channel based on name defined in SM
       # 2. Set Topic of the Channel
@@ -95,17 +93,21 @@ module.exports = (robot) ->
 
       robot.sm_ext.createRoom(channelName)
         .then (body) ->
+          robot.logger.debug(body)
           channelId = body.channel.id
-          user = robot.brain.userForName robot.name
-          if not user
-            Promise.reject("can not find bot user")
-          else
-            robot.sm_ext.invite(channelId, user.id)
+          robot.e.adapter.exec(resp,'findUsersID', robot.name)
+          .then (r) ->
+            robot.logger.debug('find userid for:'+robot.name + ' is '+r)
+            user_id = r[0]
+            robot.logger.debug("now try to invite:"+user_id+" type:"+(typeof user_id)+" channelid:"+channelId)
+            robot.sm_ext.invite(channelId, user_id)
               .then (body) ->
                 topic = msgObj.title
+                robot.logger.debug("now set topic:"+topic)
                 robot.sm_ext.setTopic channelId, topic
               .then (body) ->
                 purpose = "#{msgObj.description}"
+                robot.logger.debug("now set purpose:"+purpose)
                 robot.sm_ext.setPurpose channelId, purpose
               .then (body) ->
                 # TODO: replace this with robot.emit 'slack.attachment'
@@ -129,24 +131,35 @@ module.exports = (robot) ->
                     attachments: msgObj.attachments
 
                   # robot.emit 'slack.attachment', data
+                  robot.logger.debug("now post the data of ticket")
                   robot.sm_ext.postMessage channelId, data
                 else
                   text = "<Don't delete and unpin this>\r\nID=#{msgObj.id}\r\nSM=#{msgObj.metaInfo.server}:#{msgObj.metaInfo.port}\r\nDOCENGINE_URL=#{docengine_url}"
                   # robot.send {room:channelName}, text
                   robot.sm_ext.postMessage cannelId, text
               .then (body) ->
+                robot.logger.debug("now try to pin it:"+channelId)
                 robot.sm_ext.pin channelId, body.ts
               .then (body) ->
-                invitees = _(robot.brain.users()).filter((user)-> !!user.email_address and user.email_address in msgObj.users).value()
-                invitedBots = _(robot.brain.users()).filter((user)-> user.name in msgObj.invitedBots).value()
-                invitees.push(bot) for bot in invitedBots
-                ps = _.map(invitees, (user)->
-                  robot.sm_ext.invite channelId, user.id
-                )
-              .catch (body)->
-                robot.logger.debug body
-        .catch (body)->
-          robot.logger.debug body
-
+                robot.logger.debug("now try to invite other user")
+                robot.e.adapter.exec(resp,'usersList')
+                .then (r) ->
+                  robot.logger.debug('get userlist to match the email')
+                  invitees = _(r).filter((user)-> !!user.email and user.email in msgObj.users).value()
+                  invitedBots = _(r).filter((user)-> user.name in msgObj.invitedBots).value()
+                  invitees.push(bot) for bot in invitedBots
+                  robot.logger.debug("invite peoples:"+invitees)
+                  ps = _.map(invitees, (user)->
+                    robot.sm_ext.invite channelId, user.id
+                    robot.logger.debug("invited people:"+user.name)
+                  )
+                .catch (err) ->
+                  robot.logger.error("when try to get usersList meet exception:"+err)
+              .catch (e)->
+                robot.logger.error("invite bot user meet exception:"+e)
+          .catch (err) ->
+            robot.logger.error("when try to findUsersID for "+robot.name+ " meet exception:"+err)
+        .catch (er)->
+           robot.logger.error("create room meet exception:"+er)       
 
   )

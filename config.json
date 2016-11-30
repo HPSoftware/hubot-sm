@@ -1,0 +1,19 @@
+{
+  "config":{
+    "sm":{
+      "servers":{
+        "default":"hpe",
+        "hpe":{
+          "account":"falcon",
+          "endpoint":"16.168.2.255:13082",
+          "auth_url":"http://16.168.2.255:13082/SM/9/rest/chatopsincidents/IM10008"
+        },
+        "advantageinc-demo":{
+          "endpoint":"16.168.2.255:13082",
+          "account":"System.Admin",
+          "auth_url":"http://16.168.2.255:13082/SM/9/rest/chatopsincidents/IM10008"
+        }
+      }
+    }
+  }
+}
