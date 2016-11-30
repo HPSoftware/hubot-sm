@@ -36,32 +36,38 @@ handleResponse = (resolve, reject, e, body)->
 
 sm =
   incident:
-    get: (id, ins)->
+    get: (id, ins, account, password)->
       new Promise (_resolve, reject) ->
         endpoint = Config.get "sm.servers.#{ins}.endpoint"
         [server, port] = endpoint.split(":")
-        account = Config.get "sm.servers.#{ins}.account"
-        incident = new IncidentMangement(server.trim(), port.trim(), account, Config.get "sm.servers.#{ins}.password")
+        if account == null || account == undefined
+          account  = Config.get "sm.servers.#{ins}.account"   
+          password = Config.get "sm.servers.#{ins}.password"
+        incident = new IncidentMangement(server.trim(), port.trim(), account, password)
         incident.get id, (e, body)->
           handleResponse _resolve, reject, e, body
 
     # update an incident
-    update: (id, incident_data, ins) ->
+    update: (id, incident_data, ins, account, password) ->
       new Promise (_resolve, reject) ->
         endpoint = Config.get "sm.servers.#{ins}.endpoint"
         [server, port] = endpoint.split(":")
-        account = Config.get "sm.servers.#{ins}.account"
-        incident = new IncidentMangement(server.trim(), port.trim(), account, Config.get "sm.servers.#{ins}.password")
+        if account == null or account == undefined
+          account  = Config.get "sm.servers.#{ins}.account"   
+          password = Config.get "sm.servers.#{ins}.password"
+        incident = new IncidentMangement(server.trim(), port.trim(), account, password)
         incident.incident_id = id
         incident.update("Incident": incident_data, (e, body)->
           handleResponse _resolve, reject, e, body
         )
-    create: (incident_data, ins) ->
+    create: (incident_data, ins, account, password) ->
       new Promise (_resolve, reject) ->
         endpoint = Config.get "sm.servers.#{ins}.endpoint"
         [server, port] = endpoint.split(":")
-        account = Config.get "sm.servers.#{ins}.account"
-        incident = new IncidentMangement(server.trim(), port.trim(), account, Config.get "sm.servers.#{ins}.password")
+        if account == null or account == undefined
+          account  = Config.get "sm.servers.#{ins}.account"   
+          password = Config.get "sm.servers.#{ins}.password"
+        incident = new IncidentMangement(server.trim(), port.trim(), account, password )
         incident.create("Incident": incident_data, (e, body)->
           handleResponse _resolve, reject, e, body
         )
@@ -69,33 +75,33 @@ sm =
     update: (id, change_data, ins)->
 
 #add shortcuts
-sm.incident.resolve = (id, msg, ins, byUser)->
+sm.incident.resolve = (id, msg, ins, byUser, account, password)->
   data =
     Solution: msg
     Status: "Resolved"
     "UpdatedBy": byUser
     "JournalUpdates": ["Ticket resolved in ChatOps by #{byUser}"]
-  sm.incident.update(id, data, ins)
+  sm.incident.update(id, data, ins, account, password)
   
-sm.incident.assign = (id, people, ins, byUser)->
+sm.incident.assign = (id, people, ins, byUser, account, password)->
   data =
     Assignee: people
     "UpdatedBy": byUser
-  sm.incident.update(id, data, ins)
+  sm.incident.update(id, data, ins, account, password)
   
-sm.incident.addActivity = (id, msg, ins, byUser)->
+sm.incident.addActivity = (id, msg, ins, byUser, account, password)->
   data =
     "UpdatedBy": byUser
     "JournalUpdates": [msg]
-  sm.incident.update(id, data, ins)  
+  sm.incident.update(id, data, ins, account, password)  
   
-sm.incident.createIncident = (title, ins, createchannel, byUser)->
+sm.incident.createIncident = (title, ins, createchannel, byUser, account, password)->
   data =
     "OpenedBy":byUser
     "Title":title
     "IncidentID":createchannel
     "Description":[title]
-  sm.incident.create(data, ins) 
+  sm.incident.create(data, ins, account, password) 
 
 sm.change.approve = (id, msg, ins, byUser)->
 
