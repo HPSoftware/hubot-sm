@@ -77,7 +77,7 @@ module.exports = (robot) ->
         name = _.findKey(servers, (v)->
           v and v.endpoint is endpoint
         )
-      if not name then name = endpoint
+      if not name then name = default_ins
       channelName = robot.sm_ext.formatChannelName name, msgObj.room_name
       buf = new Buffer(msgObj.docengine_url,'base64')
       docengine_url = buf.toString('utf8')

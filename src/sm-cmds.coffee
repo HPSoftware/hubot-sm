@@ -200,7 +200,7 @@ module.exports = (robot) ->
           robot.logger.debug(r)
           msg = robot.sm_ext.buildSlackMsgFromSmError "Failed to add the activity for incident #{id}", resp.message.room, r
           #robot.emit 'slack.attachment', msg
-          resp.reply msg
+          resp.send msg
 
      info_msg=new robot.Cha.Framework.Message 'addactivity_incident_info', file_data 
      info_msg.channel = resp.message.room 
@@ -236,7 +236,7 @@ module.exports = (robot) ->
          robot.logger.debug(r)
          msg = robot.sm_ext.buildSlackMsgFromSmError "Failed to create incident", resp.message.room, r
          #robot.emit 'slack.attachment', msg
-         resp.reply msg
+         resp.send msg
      msg = new robot.Cha.Framework.Message 'create_incident_info'
      msg.channel = resp.message.room
      resp.send msg
@@ -322,7 +322,7 @@ module.exports = (robot) ->
            #resp.send info_msg
        .catch (r) ->
          robot.logger.debug(r)
-         resp.reply "Failed to update incident #{id}"+"\r*Reason*: #{r.body.Messages.join('\r')}"
+         resp.send "Failed to update incident #{id}"+"\r*Reason*: #{r.body.Messages.join('\r')}"
 
      info_msg=new robot.Cha.Framework.Message 'update_incident_info', file_data 
      info_msg.channel = resp.message.room 
@@ -367,7 +367,7 @@ module.exports = (robot) ->
                      cb1(null)
                    .catch (r) ->
                      robot.logger.debug( "gethistory error "+r)
-                     resp.reply "Fail to attaching converstaion to Service Manager Incident #{id}.\n*Reason*: #{r}"
+                     resp.send "Fail to attaching converstaion to Service Manager Incident #{id}.\n*Reason*: #{r}"
                (err)->
                  cb(null, result)
              )
@@ -400,7 +400,7 @@ module.exports = (robot) ->
                  # res.reply "Failed to attach conversation: #{data}"
                  slackMsg = robot.sm_ext.buildSlackMsgFromSmError "Failed to attach conversation to #{id}", channel, data
                  #robot.emit 'slack.attachment', slackMsg
-                 resp.reply slackmsg
+                 resp.send slackMsg
                  cb(data)
              #resp.reply "Attaching the conversation to Incident #{id}..."
              info_msg=new robot.Cha.Framework.Message 'attach_incident_info', file_data 
