@@ -24,6 +24,7 @@ Cha=require 'cha-ui'
 g_enable_auth=false
 
 module.exports = (robot) ->
+  console.log('start to load sm-cmd.coffee')
   if not robot.sm_ext
     SmExt = require "../lib/sm-#{robot.adapterName}"
     robot.sm_ext = new SmExt(robot)
@@ -32,10 +33,10 @@ module.exports = (robot) ->
     path = require("path").join __dirname, "../template/cha-tpls.yaml"
     Cha.Framework.init(path, robot.adapterName)
     robot.Cha = Cha
-    robot.logger.debug("successfully init chat from:"+path.toString())
+    console.log("successfully init chat-ui from:"+path.toString()) 
   # check that hubot-enterprise is loaded
   if not robot.e
-    robot.logger.error('hubot-enterprise not present, cannot run')
+    console.log('hubot-enterprise not present, cannot run')
     return
   # register integration
   auth_method = null
@@ -45,21 +46,25 @@ module.exports = (robot) ->
     default_ins = Config.get "sm.servers.default"
     auth_url = Config.get "sm.servers.#{default_ins}.auth_url"
     if auth_url == null or auth_url==undefined
-      robot.logger.error('hubot enterprise authentication is enabled, but auth_url did not give')
+      console.log('hubot enterprise authentication is enabled, but auth_url did not give')
       return
-    auth_method={
-      type: "basic_auth",
-      params: {
-      endpoint: auth_url
+    if  robot.e.auth != null && robot.e.auth.create_basic_auth_config != null && robot.e.auth.create_basic_auth_config != undefined
+      verb = "GET"
+      auth_method = robot.e.auth.create_basic_auth_config auth_url, verb
+      robot.logger.debug('Use create_basic_auth_config to create auth config for:'+auth_url)
+    else
+      auth_method={
+        type: "basic_auth",
+        params: {
+        endpoint: auth_url
+        }
       }
-    }
-    robot.logger.debug('Use the auth_url:'+auth_url)    
+      robot.logger.debug('Use the auth_url:'+auth_url)    
   else
     robot.logger.debug('hubot enterprise authentication is disabled')
-  
-  robot.e.registerIntegration({short_desc: "slack integrate with service manager"}, auth_method )
-  robot.logger.debug('hubot-sm-enterprise initialized successfully')
- 
+  robot.e.registerIntegration({short_desc: "slack integration with service manager"}, auth_method )
+  #robot.logger.debug('hubot-sm-enterprise initialized successfully')
+  console.log('hubot-sm-enterprise initialized successfully')
   #register get functions
   robot.e.create {product: 'sm', verb: 'get', entity: 'incident',
   regex_suffix:{re: '([\\w\\d]+)(?:\\s+on\\s+([\\w\\d]+))?', optional: false},

@@ -1,5 +1,7 @@
 Botkit = require 'botkit'
 QS = require 'querystring'
+os = require('os')
+dns = require('dns');
 Store = require 'jfs'
 dataStore = new Store('data', {saveId: 'id'})
 # console.log process.argv
@@ -18,6 +20,18 @@ dataStore.get name, (err, data)->
     console.log(data)
   else
     console.log('Start installing Slack APP....');
+    h =os.hostname()
+    fqdn=h
+    dns.lookup(h, { hints: dns.ADDRCONFIG }, (err, ip)->
+      console.log('IP: ' + ip);
+      dns.lookupService(ip, 0,  (err, hostname, service)->
+        if err
+          console.log(err);
+          return;
+        console.log('find the FQDN: ' + hostname);
+        fqdn=hostname
+      )
+    )
     # console.log(Botkit);
     try
       controller = Botkit.slackbot({
@@ -66,7 +80,7 @@ dataStore.get name, (err, data)->
         <body>
           <div id="center">
             <h1>Add SM bot to your Slack Team</h1>
-            <a href='#{controller.getAuthorizeURL()}&redirect_uri=http://localhost:#{port}/oauth'>
+            <a href='#{controller.getAuthorizeURL()}&redirect_uri=http://#{fqdn}:#{port}/oauth'>
               <img alt='Add HPE Bot to Slack' height='40' width='139' src='https://platform.slack-edge.com/img/add_to_slack.png' srcset='https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x' />
             </a>
           </div>
