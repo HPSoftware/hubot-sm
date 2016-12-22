@@ -134,13 +134,8 @@ module.exports = (robot) ->
              info_msg.channel = resp.message.room 
              resp.send info_msg  
            .catch (r) ->
-             if r.body.Messages != null && r.body.Messages.length > 0
-               msg = r.body.Messages[r.body.Messages.length-1]
-               resp.send "Failed to assign Incident #{id} to #{orginal_people}. \n*Reason*: #{msg}"
-             else
-               msg = robot.sm_ext.buildSlackMsgFromSmError "Failed to assign Incident #{id} to #{orginal_people}", resp.message.room, r
-               #robot.emit 'slack.attachment', msg
-               resp.send msg
+             msg = robot.sm_ext.buildSlackMsgFromSmError "Failed to assign Incident #{id} to #{orginal_people}", resp.message.room, r
+             resp.send msg
             
 
      info_msg=new robot.Cha.Framework.Message 'assign_incident_info', assign_data 
@@ -327,7 +322,9 @@ module.exports = (robot) ->
            #resp.send info_msg
        .catch (r) ->
          robot.logger.debug(r)
-         resp.send "Failed to update incident #{id}"+"\r*Reason*: #{r.body.Messages.join('\r')}"
+         errmsg = robot.sm_ext.buildSlackMsgFromSmError "Failed to update incident", resp.message.room, r
+         #robot.emit 'slack.attachment', errmsg
+         resp.send errmsg
 
      info_msg=new robot.Cha.Framework.Message 'update_incident_info', file_data 
      info_msg.channel = resp.message.room 
