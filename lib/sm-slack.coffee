@@ -52,21 +52,27 @@ class SmExt
       attachments:[att]
 
   buildSlackMsgFromSmError: (msg, channel, data)->
-    if data.body.Incident
-      slackMessage = this.formatRecord data.body.Incident
-      slackMessage.text = msg
-      slackMessage.channel = channel
-      slackMessage.attachments[0].text = "*Reason*: _#{data.body.Messages.join('\r')}_"
-      return slackMessage
-    else
-      text = """
-        #{msg}
-        "*Reason*: _#{data.body.Messages.join('\r')}_"
+    #if data.body.Incident
+    #  slackMessage = this.formatRecord data.body.Incident
+    #  slackMessage.text = msg
+    #  slackMessage.channel = channel
+    #  slackMessage.attachments[0].text = "*Reason*: _#{data.body.Messages.join('\r')}_"
+    #  return slackMessage
+    #else
+    err ="Unrecoverable error in application "
+    if data.body.Messages.length > 0
+      for num in [(data.body.Messages.length-1)..0]
+        err = data.body.Messages[num]
+        if err.indexOf("(")==-1 and err.indexOf(")")==-1
+          break
+    text = """
+      #{msg}
+      "*Reason*: _#{err}_"
       """
-      slackMessage =
-        text: text
-        channel: channel
-        mkdown: true
+    slackMessage =
+      text: text
+      channel: channel
+      mkdown: true
 
   formatChannelName: (prefix, roomName)->
     # length of slack channel name must be 21 or less

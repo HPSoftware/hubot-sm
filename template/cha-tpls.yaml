@@ -247,7 +247,7 @@ templates:
     }
   update_incident_ok: |
     {
-      "text": "Incident {id} was created!"
+      "text": "Incident {id} was updated!"
     } 
   update_incident_error: |
     {
