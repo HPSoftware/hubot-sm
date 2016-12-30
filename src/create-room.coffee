@@ -102,7 +102,10 @@ module.exports = (robot) ->
             robot.logger.debug("now try to invite:"+user_id+" type:"+(typeof user_id)+" channelid:"+channelId)
             robot.sm_ext.invite(channelId, user_id)
               .then (body) ->
-                topic = msgObj.title
+                if !msgObj.title && msgObj.attachments && msgObj.attachments[0]
+                  topic = msgObj.attachments[0].text
+                else
+                  topic = msgObj.title || msgObj.description
                 robot.logger.debug("now set topic:"+topic)
                 robot.sm_ext.setTopic channelId, topic
               .then (body) ->
