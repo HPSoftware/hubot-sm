@@ -24,6 +24,32 @@ Cha=require 'cha-ui'
 g_enable_auth=false
 
 module.exports = (robot) ->
+  # set logging options
+  winstonLogger = require ('winston')
+  consoleOpts = {
+    colorize: true,
+    timestamp: true,
+    level: process.env.LOG_LEVEL || 'debug'
+  }
+  transports = [new(winstonLogger.transports.Console)(consoleOpts)]
+  if process.env.FLUENTD_HOST && process.env.FLUENTD_PORT
+    FLUENTD_RECONNECT_DEFAULT = 600000
+    FLUENTD_DEFAULT_TIMEOUT = 10
+    logConfig = {
+      host: process.env.FLUENTD_HOST,
+      port: process.env.FLUENTD_PORT,
+      timeout: process.env.FLUENTD_TIMEOUT || FLUENTD_DEFAULT_TIMEOUT,
+      reconnectInterval: process.env.FLUENTD_RECONNECT || FLUENTD_RECONNECT_DEFAULT
+    }
+    FluentTransport = require('fluent-logger').support.winstonTransport()
+    messagePrefix = process.env.FLUENTD_MSG_PREFIX || 'hubot-sm'
+    transports.push(new FluentTransport(messagePrefix,logConfig))
+  winstonLogger.configure({
+    transports: transports,
+    exitOnError: false
+  })
+  winstonLogger.setLevels(winstonLogger.config.syslog.levels)
+  robot.logger = winstonLogger
   console.log('start to load sm-cmd.coffee')
   if not robot.sm_ext
     SmExt = require "../lib/sm-#{robot.adapterName}"

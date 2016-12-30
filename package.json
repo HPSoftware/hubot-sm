@@ -19,7 +19,8 @@
     "lodash": "^4.6.1",
     "moment": "^2.13.0",
     "request": "^2.69.0",
-    "string": "^3.3.1"
+    "string": "^3.3.1",
+    "winston": "^2.2.0"
   },
   "peerDependencies": {
     "hubot": "2.x"
