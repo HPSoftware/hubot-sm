@@ -22,7 +22,7 @@ S = require('string')
 moment = require 'moment'
 Cha=require 'cha-ui'
 g_enable_auth=false
-
+verbs = []
 module.exports = (robot) ->
   # set logging options
   winstonLogger = require ('winston')
@@ -92,12 +92,17 @@ module.exports = (robot) ->
   #robot.logger.debug('hubot-sm-enterprise initialized successfully')
   console.log('hubot-sm-enterprise initialized successfully')
   #register get functions
+  verbs.push("get");
   robot.e.create {product: 'sm', verb: 'get', entity: 'incident',
-  regex_suffix:{re: '([\\w\\d]+)(?:\\s+on\\s+([\\w\\d]+))?', optional: false},
+  regex_suffix:{re: '(.*)', optional: false},
   help: 'Retrieve the details of an incident by incident ID (e.g. IM10001)', type: 'respond',example:'IM10001'}, (resp,auth)->
      robot.logger.debug( 'sm get incident callback function is called with:'+resp.message+ ' \n with auth.secrets:'+auth.secrets)
-     id=resp.match[1]
-     ins = resp.match[2] or Config.get "sm.servers.default"
+     match = /([\w\d]+)(?:\s+on\s+([\w\d]+))?/i.exec resp.match[1]
+     if not match
+       sendHelp resp, room, ["Please use the correct syntax: 'sm get incident [ID]'.","To learn more about all supported commands, enter 'sm'."]
+       return
+     id=match[1]
+     ins = match[2] or Config.get "sm.servers.default"
      username = null
      password = null
      if g_enable_auth and auth!=null and auth!=undefined and auth.secrets!=null and auth.secrets!=undefined
@@ -124,14 +129,19 @@ module.exports = (robot) ->
      resp.send info_msg
      
   #register assign functions
+  verbs.push("assign");
   robot.e.create {product: 'sm', verb: 'assign', entity: 'incident',
-  regex_suffix:{re: '([\\w\\d]+)\\s+([\\S]+)(?:\\s+on\\s+([\\w\\d]+))?', optional: false},
+  regex_suffix:{re: '(.*)', optional: false},
   help: 'Assign or reassign an incident to a person ([person] can be an email address, SM username, or Slack username)', type: 'respond',example:'IM10008 falcon'}, (resp, auth)->
      robot.logger.debug( 'sm assign incident callback function is called with:'+resp+ '\n with auth:'+auth)
-     id=resp.match[1]
-     people = resp.match[2]
+     match = /([\w\d]+)\s+([\S]+)(?:\s+on\s+([\w\d]+))?/i.exec resp.match[1]
+     if not match
+       resp.send ["Please use the correct syntax: 'sm assign incident [ID] [person]'.","To learn more about all supported commands, enter 'sm'."].join("\r\n")
+       return
+     id=match[1]
+     people = match[2]
      orginal_people = people
-     ins = resp.match[3] or Config.get "sm.servers.default"
+     ins = match[3] or Config.get "sm.servers.default"
      assign_data=
        "id":id
        "orginal_people": orginal_people
@@ -169,13 +179,18 @@ module.exports = (robot) ->
      resp.send info_msg     
      
   #register resolve functions
+  verbs.push("resolve");
   robot.e.create {product: 'sm', verb: 'resolve', entity: 'incident',
-  regex_suffix:{re: '([\\w\\d]+)\\s+\\"([^\\n]*)\\"(?:\\s+on\\s+([\\w\\d]+))?', optional: false},
+  regex_suffix:{re: '(.*)', optional: false},
   help: 'Resolve an incident by providing a solution', type: 'respond',example:'IM10008 "fixed by reset password"'}, (resp,auth)->
      robot.logger.debug( 'sm resolve incident callback function is called with:'+resp+ '\n with auth:'+auth)
-     id = resp.match[1]
-     solution = resp.match[2]
-     ins = resp.match[3] or Config.get "sm.servers.default"
+     match = /([\w\d]+)\s+\"([^\n]*)\"(?:\s+on\s+([\w\d]+))?/i.exec resp.match[1]
+     if not match
+       resp.send ["Please use the correct syntax: `sm resolve incident [ID] \"[solution]\"'.","To learn more about all supported commands, enter 'sm'."].join("\r\n")
+       return
+     id = match[1]
+     solution = match[2]
+     ins = match[3] or Config.get "sm.servers.default"
      username = null
      password = null
      file_data=
@@ -201,13 +216,18 @@ module.exports = (robot) ->
      resp.send info_msg
 
   #register addactivity functions
+  verbs.push("addactivity");
   robot.e.create {product: 'sm', verb: 'addactivity', entity: 'incident',
-  regex_suffix:{re: '([\\w\\d]+)\\s+\\"([^\\n]*)\\"(?:\\s+on\\s+([\\w\\d]+))?', optional: false},
+  regex_suffix:{re: '(.*)', optional: false},
   help: 'Add an activity to an incident', type: 'respond',example:'IM10008 "solve this incident in slack"'}, (resp, auth)->
      robot.logger.debug( 'sm addactivity incident callback function is called with:'+resp+ '\n with auth:'+auth)
-     id = resp.match[1]
-     activity = resp.match[2]
-     ins = resp.match[3] or Config.get "sm.servers.default"
+     match = /([\w\d]+)\s+\"([^\n]*)\"(?:\s+on\s+([\w\d]+))?/i.exec resp.match[1]
+     if not match
+       resp.send ["Please use the correct syntax: 'sm addactivity incident [ID] \"[activity]\"'.","To learn more about all supported commands, enter 'sm'."].join("\r\n")
+       return
+     id = match[1]
+     activity = match[2]
+     ins = match[3] or Config.get "sm.servers.default"
      username = null
      password = null
      file_data=
@@ -233,13 +253,18 @@ module.exports = (robot) ->
      resp.send info_msg
 
   #register create functions
+  verbs.push("create");
   robot.e.create {product: 'sm', verb: 'create', entity: 'incident',
-  regex_suffix:{re: '\\"([^\\n]*)\\"(?:\\s+(-channel))?(?:\\s+on\\s+([\\w\\d]+))?', optional: false},
+  regex_suffix:{re: '(.*)', optional: false},
   help: 'Create an incident as well as a Slack channel for the new incident (you can omit -channel to not create a Slack channel)', type: 'respond',example:'"can not login QC" -channel'}, (resp, auth)->
      robot.logger.debug( 'sm create incident callback function is called with:'+resp+ '\n with auth:'+auth)
-     title = resp.match[1]
-     createchannel=resp.match[2] or false
-     ins = resp.match[3] or Config.get "sm.servers.default"
+     match = /\"([^\n]*)\"(?:\s+(-channel))?(?:\s+on\s+([\w\d]+))?/i.exec resp.match[1]
+     if not match
+       resp.send ["Please use the correct syntax: 'sm create incident \"[description]\" -channel'. (\"-channel\" is optional.)","To learn more about all supported commands, enter 'sm'."].join("\r\n")
+       return
+     title = match[1]
+     createchannel=match[2] or false
+     ins = match[3] or Config.get "sm.servers.default"
      if false!=createchannel
        createchannel=true
      username = null
@@ -268,6 +293,7 @@ module.exports = (robot) ->
      resp.send msg
      
   #register update functions
+  verbs.push("update");
   robot.e.create {product: 'sm', verb: 'update', entity: 'incident',
   regex_suffix:{re: '(.*)', optional: false},
   help: 'Update certain fields of an incident', type: 'respond',example:'IM10008 category=incident assignee=falcon'}, (resp, auth)->
@@ -277,11 +303,11 @@ module.exports = (robot) ->
      m = /([\d\w]+)(.*)/i.exec params
      id = m[1] if m?
      if not id
-       sendHelp room, ["Please specify an Incident `ID`", "To learn more about all supported commands, enter 'sm'."]
+       resp.send ["Please specify an Incident `ID`", "To learn more about all supported commands, enter 'sm'."].join("\r\n")
        return
      params = m[2].trim()
      if not params
-       sendHelp room, ["Can not update with nothing", "Please specify what you want to update in `field`=`value` formats", "To learn more about all supported commands, enter 'sm'."]
+       resp.send ["Can not update with nothing", "Please specify what you want to update in `field`=`value` formats", "To learn more about all supported commands, enter 'sm'."].join("\r\n")
        return
 
      m = /(.*)?on\s+([\w\d]+)$/i.exec params
@@ -294,10 +320,10 @@ module.exports = (robot) ->
      # check instance
      data = Config.get "sm.servers.#{ins}"
      if not data
-       sendHelp room, ["Please specify a validate Service Manager Instance name", "To learn more about all supported commands, enter 'sm'."]
+       resp.send ["Please specify a validate Service Manager Instance name", "To learn more about all supported commands, enter 'sm'."].join("\r\n")
        return
      if not params
-       sendHelp room, ["Can not update with nothing", "Please specify what you want to update in `field`=`value` formats", "To learn more about all supported commands, enter 'sm'."]
+       resp.send ["Can not update with nothing", "Please specify what you want to update in `field`=`value` formats", "To learn more about all supported commands, enter 'sm'."].join("\r\n")
        return
 
 
@@ -357,13 +383,18 @@ module.exports = (robot) ->
      resp.send info_msg
      
   #register attach functions
+  verbs.push("attach-conversation");
   robot.e.create {product: 'sm', verb: 'attach-conversation', entity: 'incident',
-  regex_suffix:{re: '([\\w\\d]+)\\s*(?:on (.+))?', optional: false},
+  regex_suffix:{re: '(.*)', optional: false},
   help: 'Attach the entire conversation history of the current channel to an incident', type: 'respond',example:'IM10008'}, (resp, auth)->
      robot.logger.debug( 'sm attach-conversation for incident callback function is called with:'+resp+ '\n with auth:'+auth)
-     id = resp.match[1]
+     match = /([\w\d]+)\s*(?:on (.+))?/i.exec resp.match[1]
+     if not match
+       resp.send helpAttach.join("\r\n")
+       return
+     id = match[1]
      # robot.logger.debug res.match
-     ins = resp.match[2] or Config.get "sm.servers.default"
+     ins = match[2] or Config.get "sm.servers.default"
 
      # robot.logger.debug "SM instance is #{ins}"
      serverEndpoint = Config.get("sm.servers.#{ins}.endpoint")
@@ -515,21 +546,24 @@ module.exports = (robot) ->
 
   helpIncident = [
     "Please use the following commands to access the Service Manager Incident Management module:",
-    "* `sm get incident [ID] (on [sm instance])` - Retrieve the details of an incident by incident ID (e.g. IM10001)",
-    "* `sm assign incident [ID] [person] (on [sm instance])` - Assign or reassign an incident to a person ([person] can be an email address, SM username, or Slack username)",
-    "* `sm resolve incident [ID] \"[solution]\" (on [sm instance])` - Resolve an incident by providing a solution",
-    "* `sm addactivity incident [ID] \"[activity]\" (on [sm instance])` - Add an activity to an incident",
-    "* `sm create incident \"[description]\" -channel (on [sm instance])` - Create an incident as well as a Slack channel for the new incident (you can omit '-channel' to not create a Slack channel)",
-    "* `sm update incident [ID] [field1=value2] [field2=value2] (on [sm instance])` - Update certain fields of an incident",
-    "* `sm attach-conversation incident [ID] (on [sm instance])` - Attach the entire conversation history of the current channel to an incident"
+    "* `sm get incident [ID]` - Retrieve the details of an incident by incident ID (e.g. IM10001)",
+    "* `sm assign incident [ID] [person]` - Assign or reassign an incident to a person ([person] can be an email address, SM username, or Slack username)",
+    "* `sm resolve incident [ID] \"[solution]\"` - Resolve an incident by providing a solution",
+    "* `sm addactivity incident [ID] \"[activity]\"` - Add an activity to an incident",
+    "* `sm create incident \"[description]\" -channel` - Create an incident as well as a Slack channel for the new incident (you can omit '-channel' to not create a Slack channel)",
+    "* `sm update incident [ID] [field1=value2] [field2=value2]` - Update certain fields of an incident",
+    "* `sm attach-conversation incident [ID]` - Attach the entire conversation history of the current channel to an incident"
   ]
-
-  sendHelp = (channel, msg)->
-    if robot.adapterName is 'slack'
-      text = _.map(msg, (m)-> "_#{m}_").join("\r\n")
-      robot.emit 'slack.attachment', {channel: channel, text: text, "response_type":"ephemeral"}
-    else
-      robot.send msg.join("\r\n")
+  helpWrongCmd = [
+    "Wrong command",
+    "To learn more about all supported commands, enter 'sm incident'."
+  ]
+  helpMissPara = [
+    "Missing parameter",
+    "To learn more about all supported commands, enter 'sm incident'."
+  ]
+  sendHelp = (resp,channel, msg)->
+    resp.send msg.join("\r\n")
       
   getAuthInfo = (b64str)->
     src=new Buffer(b64str, 'base64').toString('utf8')
@@ -539,6 +573,32 @@ module.exports = (robot) ->
       password:pwd
     return data
     
-  helpUnknown = (room, line)->
-    sendHelp room, ["Invalid command.", "To learn more about all supported commands, enter 'sm'."]
+  helpUnknown = ["Invalid command.", "To learn more about all supported commands, enter 'sm'."]
    
+  robot.respond /(.*)$/i, (resp)->
+    room = resp.message.room
+    fullLine = resp.match[1]
+    robot.logger.debug "get message:"+fullLine;
+    match = /sm(.*)$/i.exec fullLine
+    if not match
+      resp.send helpUnknown.join("\r\n");
+      return
+    cmdline = match[1].trim()
+    robot.logger.debug "To respond #{cmdline} in room #{room}"
+    [verb, entity,para1] = cmdline.split(/\s+/)
+    # in case sm incident
+    if verb == 'incident'
+      resp.send helpIncident.join("\r\n");
+      return
+    if entity != 'incident'
+      # print sm help
+      resp.send helpSm.join("\r\n");
+      return
+    if  not(verb in verbs) 
+      resp.send helpWrongCmd.join("\r\n");
+      return
+    if not para1
+      resp.send helpMissPara.join("\r\n");
+      return
+    robot.logger.debug fullLine+" is a known command";
+    
