@@ -99,7 +99,7 @@ module.exports = (robot) ->
      robot.logger.debug( 'sm get incident callback function is called with:'+resp.message+ ' \n with auth.secrets:'+auth.secrets)
      match = /([\w\d]+)(?:\s+on\s+([\w\d]+))?/i.exec resp.match[1]
      if not match
-       sendHelp resp, room, ["Please use the correct syntax: 'sm get incident [ID]'.","To learn more about all supported commands, enter 'sm'."]
+       resp.send ["Please use the correct syntax: 'sm get incident [ID]'.","To learn more about all supported commands, enter 'sm'."].join("\r\n")
        return
      id=match[1]
      ins = match[2] or Config.get "sm.servers.default"
