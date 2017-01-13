@@ -50,6 +50,9 @@ module.exports = (robot) ->
   })
   winstonLogger.setLevels(winstonLogger.config.syslog.levels)
   robot.logger = winstonLogger
+  sessiontimeout=process.env.SESSTIONTIMEOUT
+  if !sessiontimeout
+    sessiontimeout="30m"
   console.log('start to load sm-cmd.coffee')
   if not robot.sm_ext
     SmExt = require "../lib/sm-#{robot.adapterName}"
@@ -76,8 +79,8 @@ module.exports = (robot) ->
       return
     if  robot.e.auth != null && robot.e.auth.create_basic_auth_config != null && robot.e.auth.create_basic_auth_config != undefined
       verb = "GET"
-      auth_method = robot.e.auth.create_basic_auth_config auth_url, verb
-      robot.logger.debug('Use create_basic_auth_config to create auth config for:'+auth_url)
+      auth_method = robot.e.auth.create_basic_auth_config auth_url, verb, sessiontimeout
+      robot.logger.debug('Use create_basic_auth_config to create auth config for:'+auth_url+" and sessiontimeout is:"+sessiontimeout)
     else
       auth_method={
         type: "basic_auth",
